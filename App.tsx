@@ -3,6 +3,8 @@ import AsynStorage from '@react-native-async-storage/async-storage';
 import { StyleSheet, Text, View } from 'react-native';
 import LoginScreen from './components/LoginScreen';
 import HomeScreen from './components/HomeScreen';
+import UserScreen from './components/UserScreen';
+import LogoutScreen from './components/LogoutScreen';
 import DashboardScreen from './components/DashboardScreen';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
@@ -28,9 +30,19 @@ export default function App() {
 const LandingScreen = () => (
   <Drawer.Navigator initialRouteName="Home">
     <Drawer.Screen name="Home" component={HomeScreen} />
+    <Drawer.Screen name="Logout" component={LogoutScreen} />
+    {/* <Drawer.Screen name="Profile" component={ProfileScreen} />
+    <Drawer.Screen name="Logout" component={LogoutScreen} /> */}
     <Drawer.Screen
       name="Dashboard"
       component={DashboardScreen}
+      options={{
+        drawerItemStyle: { height: 0 }
+      }}
+    />
+      <Drawer.Screen
+      name="User"
+      component={UserScreen}
       options={{
         drawerItemStyle: { height: 0 }
       }}
