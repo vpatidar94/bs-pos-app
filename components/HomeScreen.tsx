@@ -1,7 +1,10 @@
 import React, { Component } from "react";
-import { Text, SafeAreaView, StyleSheet, TextInput, Button, View, FlatList, Image } from "react-native";
+import { Text, SafeAreaView, StyleSheet, TextInput, Button, View, FlatList, Image,Dimensions } from "react-native";
 import Card from './Card';
 import { HomeMenuList } from './HomeMenuList'
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 class HomeScreen extends Component {
   constructor(props) {
@@ -75,8 +78,8 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   card: {
-    height: 100,
-    width: 170,
+    height: windowHeight-550,
+    width: windowWidth-190,
     backgroundColor: 'white',
     justifyContent: 'center', //Centered vertically
     alignItems: 'center', // Centered horizontally
