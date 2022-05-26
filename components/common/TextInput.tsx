@@ -4,7 +4,7 @@ import { View, StyleSheet, Text } from 'react-native'
 import { TextInput as Input } from 'react-native-paper'
 import { theme } from '../../core/theme'
 
-export default function TextInput({ errorText, description, ...props }) {
+export default function TextInput({ errorText, description,disabled, ...props }) {
   return (
     <View style={styles.container}>
       <Input
@@ -12,6 +12,7 @@ export default function TextInput({ errorText, description, ...props }) {
         selectionColor={theme.colors.primary}
         underlineColor="transparent"
         mode="outlined"
+        disabled={disabled}
         {...props}
       />
       {description && !errorText ? (

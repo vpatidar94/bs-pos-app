@@ -26,9 +26,10 @@ export default class userService extends AuthService {
   //     })
   // }
 
-  updateUserInfo(userVo) {
-    return axios.post(`${url.USER_UPDATE}`, userVo, super.setTokenToRequest())
+ async updateUserInfo(userVo) {
+    return axios.post(`${url.USER_UPDATE}`, userVo, await super.setTokenToRequest())
       .then(res => {
+        console.log('res.data',res.data);
         return res.data;
       }).catch(err => {
         console.log('xxxxxxxxx xxxxxxxxxxxxx error ' + err);

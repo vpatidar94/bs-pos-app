@@ -7,6 +7,8 @@ import ButtonCustom from '../components/common/Button'
 import TextInputCustom from '../components/common/TextInput'
 import { theme } from '../core/theme'
 import { StackActions } from '@react-navigation/native';
+import { UserAuthVo } from 'codeartist-core';
+import { ActivityIndicator, Colors } from 'react-native-paper';
 
 const AuthServiceApi = new AuthService()
 
@@ -14,11 +16,12 @@ class LoginScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userName: '',
-      userPassword: '',
+      email: '',
+      password: '',
       actionMessage: '',
       alertBox: false,
       errors: {},
+      loaderStatus: false
     };
   }
 
@@ -54,19 +57,19 @@ class LoginScreen extends Component {
     // Name
 
     // Email
-    if (!this.state.userName) {
+    if (!this.state.email) {
       formIsValid = false
       errors['email'] = "Email can't be empty"
     } else {
-      if (this.state.userName) {
-        let lastAtPos = this.state.userName.lastIndexOf('@')
-        let lastDotPos = this.state.userName.lastIndexOf('.')
+      if (this.state.email) {
+        let lastAtPos = this.state.email.lastIndexOf('@')
+        let lastDotPos = this.state.email.lastIndexOf('.')
         if (!(
           lastAtPos < lastDotPos &&
           lastAtPos > 0 &&
-          this.state.userName.indexOf('@@') == -1 &&
+          this.state.email.indexOf('@@') == -1 &&
           lastDotPos > 2 &&
-          this.state.userName.length - lastDotPos > 2
+          this.state.email.length - lastDotPos > 2
         )
         ) {
           formIsValid = false
@@ -75,42 +78,40 @@ class LoginScreen extends Component {
       }
     }
 
-    if (!this.state.userPassword) {
+    if (!this.state.password) {
       formIsValid = false
       errors['password'] = "Password can't be empty"
     } else {
-      console.log("jj", this.state.userPassword.length)
-      if (this.state.userPassword.length < 5) {
+      if (this.state.password.length < 5) {
         formIsValid = false
         errors['password'] = 'Password must be at least 5 characters long'
       }
     }
 
-
     this.setState({ errors: errors })
     return formIsValid
   }
-  onChangeText = (event) => {
-    let userName = this.state.userName;
-    let userPassword = this.state.userPassword
-  };
 
   loginMe = () => {
-    const userAuthDto = {
-      email: this.state.userName,
-      password: this.state.userPassword
-    }
+
+    const userAuthVo = {} as UserAuthVo;
+    userAuthVo.email = this.state.email;
+    userAuthVo.password = this.state.password;
+
     if (this.handleValidation()) {
-      AuthServiceApi.loginInfo(userAuthDto)
+      this.setState({
+        loaderStatus: true
+      })
+      AuthServiceApi.loginInfo(userAuthVo)
         .then(result => {
+          console.log("result", result.body.token);
           if (result.status == 'SUCCESS') {
-            this.setState({
-              actionMessage: result.message,
-              alertBox: true,
-            })
             if (result.body.token) {
               localDataSet.setLocal('token', result.body.token);
               // this.props.navigation.navigate('landing');
+              this.setState({
+                loaderStatus: false
+              })
               this.props.navigation.dispatch(
                 StackActions.replace('landing')
               );
@@ -120,8 +121,16 @@ class LoginScreen extends Component {
             this.setState({
               actionMessage: result.message,
               alertBox: true,
+              loaderStatus: false
             })
           }
+        })
+        .catch(err => {
+          this.setState({
+            actionMessage: "Please Enter Valid Email Id and Password",
+            alertBox: true,
+            loaderStatus: false
+          })
         })
     }
   }
@@ -138,9 +147,9 @@ class LoginScreen extends Component {
           {/* <Text style={styles.label}>User Name</Text>
           <TextInput
             style={styles.input}
-            onChangeText={(userName) => this.setState({ userName })}
+            onChangeText={(email) => this.setState({ email })}
             placeholder="Enter User Name"
-            value={this.state.userName}
+            value={this.state.email}
           />
           <View>
             <Text>
@@ -150,9 +159,9 @@ class LoginScreen extends Component {
           <Text style={styles.label}>Password</Text>
           <TextInput
             style={styles.input}
-            onChangeText={(userPassword) => this.setState({ userPassword })}
+            onChangeText={(password) => this.setState({ password })}
             placeholder="Enter User Password"
-            value={this.state.userPassword}
+            value={this.state.password}
           />
           <View style={styles.btnView}>
             <Button
@@ -169,10 +178,11 @@ class LoginScreen extends Component {
           <TextInputCustom
             label="Email"
             returnKeyType="next"
-            value={this.state.userName}
-            onChangeText={(userName) => this.setState({ userName })}
+            value={this.state.email}
+            onChangeText={(email) => this.setState({ email })}
             error={!!this.state.errors.email}
             errorText={this.state.errors.email}
+            disabled={this.state.loaderStatus}
             autoCapitalize="none"
             autoCompleteType="email"
             textContentType="emailAddress"
@@ -181,10 +191,11 @@ class LoginScreen extends Component {
           <TextInputCustom
             label="Password"
             returnKeyType="done"
-            value={this.state.userPassword}
-            onChangeText={(userPassword) => this.setState({ userPassword })}
+            value={this.state.password}
+            onChangeText={(password) => this.setState({ password })}
             error={!!this.state.errors.password}
             errorText={this.state.errors.password}
+            disabled={this.state.loaderStatus}
             secureTextEntry
           />
           {/* <View style={styles.forgotPassword}>
@@ -194,9 +205,18 @@ class LoginScreen extends Component {
               <Text style={styles.forgot}>Forgot your password?</Text>
             </TouchableOpacity>
           </View> */}
-          <ButtonCustom mode="contained" onPress={this.loginMe}>
+          <ActivityIndicator
+            animating={this.state.loaderStatus}
+            color={theme.colors.primary}
+            size='large'
+          />
+          <ButtonCustom mode="contained" disabled={this.state.loaderStatus} onPress={this.loginMe}>
             Login
-      </ButtonCustom>
+          </ButtonCustom>
+
+          {this.state.alertBox ? <View>
+            <Text style={styles.loginFailed}>{this.state.actionMessage} </Text>
+          </View> : <Text> </Text>}
           {/* <View style={styles.row}>
             <Text>Don’t have an account? </Text>
             <TouchableOpacity onPress={() => navigation.replace('RegisterScreen')}>
@@ -227,6 +247,11 @@ const styles = StyleSheet.create({
   link: {
     fontWeight: 'bold',
     color: theme.colors.primary,
+  },
+  loginFailed: {
+    fontSize: 13,
+    color: theme.colors.error,
+    paddingTop: 8,
   },
 })
 // const styles = StyleSheet.create({

@@ -5,7 +5,8 @@ export const localDataSet = {
   getLocal,
   removeLocal,
   getLanguage,
-  setLanguage
+  setLanguage,
+  getTokenValue
 }
 
 function setLocal (name, data) {
@@ -25,6 +26,10 @@ async function getLocal (name) {
   const token = await AsyncStorage.getItem(name);
   return token != null ? JSON.parse(token) : null;
  // return !!token && !isTokenExpired(token)
+}
+
+function getTokenValue(token){
+  return decode(token);
 }
 
 function isTokenExpired (token) {
