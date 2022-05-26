@@ -8,7 +8,7 @@ import TextInputCustom from '../components/common/TextInput'
 import { theme } from '../core/theme'
 import { StackActions } from '@react-navigation/native';
 import { UserAuthVo } from 'codeartist-core';
-import { ActivityIndicator, Colors } from 'react-native-paper';
+import { ActivityIndicator } from 'react-native-paper';
 
 const AuthServiceApi = new AuthService()
 
