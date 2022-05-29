@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { url } from '../config/url'
 import AuthService from "./authService";
 
@@ -26,14 +25,51 @@ export default class userService extends AuthService {
   //     })
   // }
 
- async updateUserInfo(userVo) {
-    return axios.post(`${url.USER_UPDATE}`, userVo, await super.setTokenToRequest())
-      .then(res => {
-        console.log('res.data',res.data);
-        return res.data;
-      }).catch(err => {
-        console.log('xxxxxxxxx xxxxxxxxxxxxx error ' + err);
-      })
+  async updateUserInfo(userEmpDepartmentDto) {
+    console.log("updateUserInfoupdateUserInfo", userEmpDepartmentDto);
+
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", await super.setTokenToRequest());
+    myHeaders.append("Content-Type", "application/json");
+
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: JSON.stringify(userEmpDepartmentDto),
+      redirect: 'follow'
+    };
+
+    return fetch(`${url.USER_UPDATE}`, requestOptions)
+      .then(response => response.json())
+      .then(result => { return result })
+      .catch(error => {console.log('error', error); return err;});
+
+    // var raw = JSON.stringify({"emp":{"email":"v123489@gmail.com","nameF":"Vinay","nameL":"Patidar","cell":"6260687100","emp":[{"role":"POS_EMP","orgId":"BS","brId":"BS","active":true}]},"dept":{"type":"COUNTER","name":"Counter A"}});
+    // var requestOptions = {
+    //   method: 'POST',
+    //   headers: await super.setTokenToRequest(),
+    //   body: JSON.stringify(updateUserInfoupdateUserInfo),
+    //   redirect: 'follow'
+    // };
+
+    // // console.log("requestOptions",requestOptions)
+    // return fetch(`${url.USER_UPDATE}`, requestOptions)
+    //   .then(response => response.json())
+    //   .then(res => {
+    //     return res;
+    //   })
+    //   .catch(err => {
+    //     console.log('xxxxxxxxx xxxxxxxxxxxxx error ' + err);
+    //     return err;
+    //   });
+    // return axios.post(`${url.USER_UPDATE}`, userVo, await super.setTokenToRequest())
+    //   .then(res => {
+    //     console.log('res.data',res.data);
+    //     return res.data;
+    //   }).catch(err => {
+    //     console.log('xxxxxxxxx xxxxxxxxxxxxx error ' + err);
+    //   })
   }
   // updateStaffWeeklyScheduleInfo(staffVo) {
   //   return axios.post(`${url.STAFF_WEEKLY_UPDATE + staffVo.id}`, staffVo, super.setTokenToRequest())

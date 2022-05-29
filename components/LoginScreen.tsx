@@ -7,7 +7,7 @@ import ButtonCustom from '../components/common/Button'
 import TextInputCustom from '../components/common/TextInput'
 import { theme } from '../core/theme'
 import { StackActions } from '@react-navigation/native';
-import { UserAuthVo } from 'codeartist-core';
+import { UserAuthDto } from 'codeartist-core';
 import { ActivityIndicator } from 'react-native-paper';
 
 const AuthServiceApi = new AuthService()
@@ -94,15 +94,15 @@ class LoginScreen extends Component {
 
   loginMe = () => {
 
-    const userAuthVo = {} as UserAuthVo;
-    userAuthVo.email = this.state.email;
-    userAuthVo.password = this.state.password;
+    const userAuthDto = {} as UserAuthDto;
+    userAuthDto.email = this.state.email;
+    userAuthDto.password = this.state.password;
 
     if (this.handleValidation()) {
       this.setState({
         loaderStatus: true
       })
-      AuthServiceApi.loginInfo(userAuthVo)
+      AuthServiceApi.loginInfo(userAuthDto)
         .then(result => {
           console.log("result", result.body.token);
           if (result.status == 'SUCCESS') {

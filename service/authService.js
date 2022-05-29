@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { url } from '../config/url'
 import { localDataSet } from '../config/localDataSet';
 import decode from 'jwt-decode';
@@ -19,13 +18,69 @@ export default class AuthService {
 
       loginInfo(userInfoDto) {
             console.log("userInfoDto", userInfoDto);
-            return axios.post(`${url.USER_LOGIN}`, userInfoDto)
+
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+
+            var raw = JSON.stringify(userInfoDto);
+
+            var requestOptions = {
+                  method: 'POST',
+                  headers: myHeaders,
+                  body: raw,
+                  redirect: 'follow'
+            };
+
+            return fetch(`${url.USER_LOGIN}`, requestOptions)
+                  .then(response => response.json())
                   .then(res => {
-                        return res.data;
-                  }).catch(err => {
-                        console.log('xxxxxxxxx xxxxxxxxxxxxx error ' + err);
-                        // return err;
+                        console.log("resres", res);
+                        return res;
                   })
+                  .catch(err => {
+                        console.log('xxxxxxxxx xxxxxxxxxxxxx error ' + err);
+                        return err;
+                  });
+
+            // var myHeaders = new Headers();
+            // myHeaders.append("Content-Type", "application/json");
+
+            // //  var raw = JSON.stringify({ "email": "vpatidar94@gmail.com", "password": "6260687100" });
+
+            // var requestOptions = {
+            //       method: 'POST',
+            //       headers: myHeaders,
+            //       body: JSON.stringify(userInfoDto),
+            //       redirect: 'follow'
+            // };
+
+            // return fetch(`${url.USER_LOGIN}}`, requestOptions)
+            //       .then(response => response.json())
+            //       .then(res => {
+            //             console.log("resres", res);
+            //             return res;
+            //       })
+            //       .catch(err => {
+            //             console.log('xxxxxxxxx xxxxxxxxxxxxx error ' + err);
+            //             return err;
+            //       });
+
+            // return fetch.then(response => response.json())
+            //       .then(res => {
+            //             console.log("resres", res);
+            //             return res;
+            //       })
+            //       .catch(err => {
+            //             console.log('xxxxxxxxx xxxxxxxxxxxxx error ' + err);
+            //             return err;
+            //       });
+            // return axios.post(`${url.USER_LOGIN}`, userInfoDto)
+            //       .then(res => {
+            //             return res.data;
+            //       }).catch(err => {
+            //             console.log('xxxxxxxxx xxxxxxxxxxxxx error ' + err);
+            //             return err;
+            //       })
       }
       //    logoutInfo(userInfoVo) {
       //       return axios.post(`${url.USER_LOGOUT}`, userInfoVo)
@@ -89,14 +144,19 @@ export default class AuthService {
       }
 
       async setTokenToRequest() {
-            let token = await this.getToken();
-        
-            if (token) {
-                  return axios.defaults.headers['Authorization'] = 'Bearer ' + token;
+            const token = await this.getToken();
 
-            } else {
-                  return axios.defaults.headers['Authorization'] = null;
-            }
+            let myHeaders = new Headers();
+            myHeaders.append("Authorization", 'Bearer ' + token);
+            myHeaders.append("Content-Type", "application/json");
+
+            return myHeaders;
+            // if (token) {
+            //       return axios.defaults.headers['Authorization'] = 'Bearer ' + token;
+
+            // } else {
+            //       return axios.defaults.headers['Authorization'] = null;
+            // }
       }
 
 

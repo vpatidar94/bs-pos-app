@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text, SafeAreaView, StyleSheet, TextInput, Button, View, FlatList, Image,Dimensions } from "react-native";
+import { Text, SafeAreaView, StyleSheet, TextInput, Button, View, FlatList, Image, Dimensions } from "react-native";
 import Card from './Card';
 import { HomeMenuList } from './HomeMenuList'
 
@@ -32,6 +32,8 @@ class HomeScreen extends Component {
       case 1: this.props.navigation.navigate('Dashboard');
         break;
       case 2: this.props.navigation.navigate('User');
+        break;
+      case 3: this.props.navigation.navigate('Route');
         break;
 
     }
@@ -78,8 +80,8 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   card: {
-    height: windowHeight-550,
-    width: windowWidth-190,
+    height: windowHeight - 550,
+    width: windowWidth - 190,
     backgroundColor: 'white',
     justifyContent: 'center', //Centered vertically
     alignItems: 'center', // Centered horizontally
