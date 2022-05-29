@@ -10,4 +10,5 @@ exports.url = {
 
   //ROUTE
   ROUTE_LIST: `${domain}/route-counter/list/`,
+  ROUTE_UPDATE: `${domain}/route-counter/add-update`,
 }

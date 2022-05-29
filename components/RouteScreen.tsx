@@ -48,6 +48,8 @@ class RouteScreen extends Component {
       snackbarMsg: '',
       deptType: '',
       deptName: '',
+      updateDeptType: '',
+      updateDeptName: '',
       routeCountList: ''
     }
   }
@@ -106,10 +108,55 @@ class RouteScreen extends Component {
   }
 
 
-  backMe = () => {
+
+  updateRouteCount = () => {
+    let routeVo = {
+      type: this.state.updateDeptType,
+      name: this.state.updateDeptName
+    }
+
+    RouteServiceApi.addUpdateRoute(routeVo)
+      .then(result => {
+        if (result.status == 'SUCCESS') {
+          this.setState({
+            snackbarStatus: true,
+            snackbarMsg: result.msg
+          })
+          setTimeout(
+            function(){
+              this.reset();
+              this.getRouteCountList();
+            }.bind(this),
+            1000
+          )
+        }
+        if (result.status == 'FAIL') {
+          this.setState({
+            snackbarStatus: true,
+            snackbarMsg: result.msg
+          })
+        }
+      })
+      .catch(err => {
+        if (err.status == 'FAIL') {
+          this.setState({
+            snackbarStatus: true,
+            snackbarMsg: err.msg
+          })
+        }
+      })
+  }
+
+  reset =()=>{
     this.setState({
-      showList: true
+      showList: true,
+      updateDeptType: '',
+      updateDeptName: ''
     })
+  }
+
+  backMe = () => {
+    this.reset();
   }
 
   setShowDropDown = (value) => {
@@ -195,22 +242,22 @@ class RouteScreen extends Component {
                 visible={this.state.showDropDownStatus}
                 showDropDown={() => this.setShowDropDown(true)}
                 onDismiss={() => this.setShowDropDown(false)}
-                value={this.state.deptType}
-                setValue={(deptType) => this.setDeptValue(deptType)}
+                value={this.state.updateDeptType}
+                setValue={(updateDeptType) => this.setState({ updateDeptType })}
                 list={DEPT_LIST}
               />
               <TextInputCustom
                 label="Name"
                 returnKeyType="next"
-                value={this.state.deptName}
-                onChangeText={(name) => this.setState({ deptName })}
-                error={!!this.state.errors.deptName}
-                errorText={this.state.errors.deptName}
+                value={this.state.updateDeptName}
+                onChangeText={(updateDeptName) => this.setState({ updateDeptName })}
+                error={!!this.state.errors.updateDeptName}
+                errorText={this.state.errors.updateDeptName}
                 autoCapitalize="none"
               />
 
 
-              <ButtonCustom mode="contained" onPress={this.saveUser}>
+              <ButtonCustom mode="contained" onPress={this.updateRouteCount}>
                 Add User
             </ButtonCustom>
 
