@@ -8,6 +8,7 @@ import { localDataSet } from '../config/localDataSet';
 import TextInputCustom from '../components/common/TextInput'
 import ButtonCustom from '../components/common/Button'
 import { UserVo, AclVo, UserEmpDepartmentDto, EmpDepartmentVo, DEPT_LIST, DEPT } from 'codeartist-core'
+import { ActivityIndicator } from 'react-native-paper';
 
 
 const Item = ({ title }) => (
@@ -50,7 +51,8 @@ class RouteScreen extends Component {
       deptName: '',
       updateDeptType: '',
       updateDeptName: '',
-      routeCountList: ''
+      routeCountList: '',
+      loaderStatus: false
     }
   }
 
@@ -60,17 +62,17 @@ class RouteScreen extends Component {
 
   getRouteCountList = () => {
 
+    this.setState({
+      loaderStatus: true
+    })
     RouteServiceApi.getRouteList("")
       .then(result => {
         if (result.status == 'SUCCESS') {
           this.setState({
             routeCountList: result.body,
-          })
-          filterRouteCountList = result.body
-
-          this.setDeptValue(DEPT.DISTRIBUTION);
+            loaderStatus: false
+          }, () => this.setDeptValue(DEPT.DISTRIBUTION))
         }
-        // console.log("resultresultresult", result);
       })
   }
   addUser = () => {
@@ -123,7 +125,7 @@ class RouteScreen extends Component {
             snackbarMsg: result.msg
           })
           setTimeout(
-            function(){
+            function () {
               this.reset();
               this.getRouteCountList();
             }.bind(this),
@@ -147,7 +149,7 @@ class RouteScreen extends Component {
       })
   }
 
-  reset =()=>{
+  reset = () => {
     this.setState({
       showList: true,
       updateDeptType: '',
@@ -198,7 +200,7 @@ class RouteScreen extends Component {
             onPress={this.addUser}
           /> : <Text> </Text>}
 
-          <View style={styles.dropDown}>
+          {this.state.showList ? <View style={styles.dropDown}>
             <DropDown
               label={"Type"}
               mode={"outlined"}
@@ -210,6 +212,7 @@ class RouteScreen extends Component {
               list={DEPT_LIST}
             />
           </View>
+            : <Text> </Text>}
 
           {/* <FlatList
           data={DATA}
@@ -225,6 +228,13 @@ class RouteScreen extends Component {
 
           {this.state.showList ? filterRouteCountList ?
             <View>
+
+              {this.state.loaderStatus ?
+                <ActivityIndicator
+                  animating={this.state.loaderStatus}
+                  color={theme.colors.primary}
+                  size='large'
+                /> : <Text></Text>}
               <List.Section>
                 <List.Subheader>Router/Counter List</List.Subheader>
                 {this.renderList()}
@@ -258,7 +268,7 @@ class RouteScreen extends Component {
 
 
               <ButtonCustom mode="contained" onPress={this.updateRouteCount}>
-                Add User
+                Add Route
             </ButtonCustom>
 
               <ButtonCustom mode="contained" onPress={this.backMe}>
@@ -321,7 +331,7 @@ const styles = StyleSheet.create({
   },
   dropDown: {
     width: '50%',
-    height: '15%'
+    height: '15%',
   }
 });
 
