@@ -62,16 +62,28 @@ class UserScreen extends Component {
       snackbarMsg: '',
       deptType: '',
       deptName: '',
-      showDialog: false
+      showDialog: false,
+      userList: []
     }
   }
 
   componentDidMount() {
     // console.log("getTokenValue", this.getTokenValue());
-    // this.getUserList();
-    console.log("DEPT_LIST",DEPT_LIST);
+    this.getUserList();
+    console.log("DEPT_LIST", DEPT_LIST);
   }
 
+  getUserList = () => {
+    UserServiceApi.getUserList()
+      .then(result => {
+        console.log("resultresult", result);
+        if (result.status == 'SUCCESS') {
+          this.setState({
+            userList: result.body
+          })
+        }
+      })
+  }
   addUser = () => {
     this.setState({
       showList: false
@@ -124,7 +136,7 @@ class UserScreen extends Component {
     console.log("jai ram ji ki add user", userEmpDepartmentDto)
     UserServiceApi.updateUserInfo(userEmpDepartmentDto)
       .then(result => {
-        console.log("resultresultresult",result);
+        console.log("resultresultresult", result);
         if (result.status == 'SUCCESS') {
           this.setState({
             snackbarStatus: true,
@@ -197,6 +209,23 @@ class UserScreen extends Component {
     this.showDialog(false);
   }
 
+  renderList() {
+
+    return this.state.userList.map((value, index) => {
+      return (<View key={index}>
+        <List.Item
+          title={value.emp.nameF}
+          right={() => <List.Icon color="#000" icon="forward" />}
+        />
+
+      </View>)
+    })
+    // console.log("this.state.routeCountListppp", this.state.routeCountList);
+    // return this.state.routeCountList.map( (value, i {
+    //   return (<View><Text>{value.name}</Text></View>);
+    // });
+  }
+
   // hideDialog = () => {
   //   this.setState({
   //     showDialog: false
@@ -222,14 +251,15 @@ class UserScreen extends Component {
           renderItem={renderItem}
           keyExtractor={item => item.id}
         /> */}
-          {this.state.showList ? <List.Section>
-            <List.Subheader>User List</List.Subheader>
-            <List.Item title="Shyam Patidar" left={() => <List.Icon icon="folder" />} onPress={() => this.selectedUser('test')} />
-            <List.Item
-              title="Ram Sharma"
-              left={() => <List.Icon color="#000" icon="folder" />}
-            />
-          </List.Section> : <Text> </Text>}
+          {this.state.showList ?
+
+            this.state.userList ?
+              <List.Section>
+                <List.Subheader>User List</List.Subheader>
+                {this.renderList()}
+              </List.Section>
+              : <Text> </Text>
+            : <Text> </Text>}
 
           {!this.state.showList ?
 

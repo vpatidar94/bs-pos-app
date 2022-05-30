@@ -7,6 +7,7 @@ exports.url = {
 
   //USER 
   USER_UPDATE: `${domain}/user/emp-add-update`,
+  USER_LIST: `${domain}/user/emp-list`,
 
   //ROUTE
   ROUTE_LIST: `${domain}/route-counter/list/`,
