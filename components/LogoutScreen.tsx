@@ -12,7 +12,12 @@ class LogoutScreen extends Component {
 
   componentDidMount() {
     localDataSet.removeLocal('token');
-    this.props.navigation.navigate('login');
+    //this.props.navigation.navigate('login');
+
+    this.props.navigation.reset({
+      index: 0,
+      routes: [{name: 'login'}],
+    });
   }
   render() {
     return (

@@ -6,6 +6,7 @@ import { StyleSheet, Text, View,Dimensions } from 'react-native';
 import LoginScreen from './components/LoginScreen';
 import HomeScreen from './components/HomeScreen';
 import UserScreen from './components/UserScreen';
+import UserEditScreen from './components/UserEditScreen';
 import RouteScreen from './components/RouteScreen';
 import LogoutScreen from './components/LogoutScreen';
 import DashboardScreen from './components/DashboardScreen';
@@ -38,6 +39,15 @@ const LandingScreen = () => (
         drawerItemStyle: { height: 0 }
       }}
     />
+
+     <Drawer.Screen
+      name="UserAdd"
+      component={UserEditScreen}
+      options={{
+        drawerItemStyle: { height: 0 }
+      }}
+    />
+
      <Drawer.Screen
       name="Route"
       component={RouteScreen}

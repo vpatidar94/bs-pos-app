@@ -174,7 +174,7 @@ class RouteScreen extends Component {
       return (<View key={index}>
         <List.Item
           title={value.name}
-          right={() => <List.Icon color="#000" icon="forward" />}
+          right={() => <List.Icon icon="chevron-right" />}
         />
 
       </View>)
