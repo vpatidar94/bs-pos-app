@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text, SafeAreaView, ScrollView, StyleSheet, TextInput, Button, View, FlatList, StatusBar } from "react-native";
+import { Text, SafeAreaView, ScrollView, StyleSheet, TextInput, Button, View, FlatList, StatusBar, Dimensions } from "react-native";
 import { FAB, List, Snackbar, Provider, Surface, Dialog, Portal, Paragraph } from 'react-native-paper';
 import DropDown from "react-native-paper-dropdown";
 import { theme } from '../core/theme'
@@ -21,20 +21,8 @@ const renderItem = ({ item }) => (
   <Item title={item.title} />
 );
 
-const typeList = [
-  {
-    label: "Male",
-    value: "male",
-  },
-  {
-    label: "Female",
-    value: "female",
-  },
-  {
-    label: "Others",
-    value: "others",
-  },
-];
+const windowHeight = Dimensions.get('window').height;
+
 
 const RouteServiceApi = new RouteService();
 let filterRouteCountList = [];
@@ -42,15 +30,6 @@ class RouteScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showList: true,
-      errors: {},
-      snackbarStatus: false,
-      showDropDownStatus: true,
-      snackbarMsg: '',
-      deptType: '',
-      deptName: '',
-      updateDeptType: '',
-      updateDeptName: '',
       routeCountList: '',
       loaderStatus: false
     }
@@ -76,9 +55,7 @@ class RouteScreen extends Component {
       })
   }
   addUser = () => {
-    this.setState({
-      showList: false
-    })
+    this.props.navigation.navigate('RouteAdd');
   }
 
   async getTokenValue() {
@@ -111,65 +88,7 @@ class RouteScreen extends Component {
 
 
 
-  updateRouteCount = () => {
-    let routeVo = {
-      type: this.state.updateDeptType,
-      name: this.state.updateDeptName
-    }
-
-    RouteServiceApi.addUpdateRoute(routeVo)
-      .then(result => {
-        if (result.status == 'SUCCESS') {
-          this.setState({
-            snackbarStatus: true,
-            snackbarMsg: result.msg
-          })
-          setTimeout(
-            function () {
-              this.reset();
-              this.getRouteCountList();
-            }.bind(this),
-            1000
-          )
-        }
-        if (result.status == 'FAIL') {
-          this.setState({
-            snackbarStatus: true,
-            snackbarMsg: result.msg
-          })
-        }
-      })
-      .catch(err => {
-        if (err.status == 'FAIL') {
-          this.setState({
-            snackbarStatus: true,
-            snackbarMsg: err.msg
-          })
-        }
-      })
-  }
-
-  reset = () => {
-    this.setState({
-      showList: true,
-      updateDeptType: '',
-      updateDeptName: ''
-    })
-  }
-
-  backMe = () => {
-    this.reset();
-  }
-
-  setShowDropDown = (value) => {
-    this.setState({
-      showDropDownStatus: value
-    })
-  }
-
   renderList() {
-
-    console.log("filterRouteCountListfilterRouteCountList", filterRouteCountList)
     return filterRouteCountList.map((value, index) => {
       return (<View key={index}>
         <List.Item
@@ -179,28 +98,23 @@ class RouteScreen extends Component {
 
       </View>)
     })
-    // console.log("this.state.routeCountListppp", this.state.routeCountList);
-    // return this.state.routeCountList.map( (value, i {
-    //   return (<View><Text>{value.name}</Text></View>);
-    // });
   }
 
 
   render() {
     return (
-
       <Provider>
         <SafeAreaView style={styles.container}>
 
-          {this.state.showList ? <FAB
+          <FAB
             style={styles.fab}
             small
             icon="plus"
             color={theme.colors.surface}
             onPress={this.addUser}
-          /> : <Text> </Text>}
+          />
 
-          {this.state.showList ? <View style={styles.dropDown}>
+          <View style={styles.dropDown}>
             <DropDown
               label={"Type"}
               mode={"outlined"}
@@ -212,80 +126,25 @@ class RouteScreen extends Component {
               list={DEPT_LIST}
             />
           </View>
-            : <Text> </Text>}
 
-          {/* <FlatList
-          data={DATA}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
-        /> */}
-
-          {/* <View>
-          {this.state.routeCountList.map(value => (
-            (<View><Text>{value.name}</Text></View>)
-          ))}
-          </View> */}
-
-          {this.state.showList ? filterRouteCountList ?
+          {filterRouteCountList &&
             <View>
-
-              {this.state.loaderStatus ?
-                <ActivityIndicator
-                  animating={this.state.loaderStatus}
-                  color={theme.colors.primary}
-                  size='large'
-                /> : <Text></Text>}
+              {this.state.loaderStatus &&
+                <View style={styles.indicator_view}>
+                  <ActivityIndicator
+                    animating={this.state.loaderStatus}
+                    color={theme.colors.primary}
+                    size='large'
+                    style={styles.loader}
+                  />
+                </View>}
               <List.Section>
-                <List.Subheader>Router/Counter List</List.Subheader>
-                {this.renderList()}
-
+                {!this.state.loaderStatus && <List.Subheader>Router/Counter List</List.Subheader>}
+                <ScrollView>
+                  {this.renderList()}
+                </ScrollView>
               </List.Section>
-            </View> : <Text> </Text> : <Text> </Text>}
-
-          {!this.state.showList ?
-
-            <View style={styles.user_view}>
-
-              <DropDown
-                label={"Type"}
-                mode={"outlined"}
-                visible={this.state.showDropDownStatus}
-                showDropDown={() => this.setShowDropDown(true)}
-                onDismiss={() => this.setShowDropDown(false)}
-                value={this.state.updateDeptType}
-                setValue={(updateDeptType) => this.setState({ updateDeptType })}
-                list={DEPT_LIST}
-              />
-              <TextInputCustom
-                label="Name"
-                returnKeyType="next"
-                value={this.state.updateDeptName}
-                onChangeText={(updateDeptName) => this.setState({ updateDeptName })}
-                error={!!this.state.errors.updateDeptName}
-                errorText={this.state.errors.updateDeptName}
-                autoCapitalize="none"
-              />
-
-
-              <ButtonCustom mode="contained" onPress={this.updateRouteCount}>
-                Add Route
-            </ButtonCustom>
-
-              <ButtonCustom mode="contained" onPress={this.backMe}>
-                Back
-            </ButtonCustom>
-
-              <Snackbar
-                visible={this.state.snackbarStatus}
-                onDismiss={this.onDismissSnackBar}
-                style={styles.snackbar}
-              >
-                {this.state.snackbarMsg}
-              </Snackbar>
-            </View>
-
-            : <Text> </Text>}
-
+            </View>}
         </SafeAreaView>
       </Provider>
     );
@@ -293,28 +152,8 @@ class RouteScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-  },
-  label: {
-    marginLeft: 12,
-  },
-  btnView: {
-    width: "100%",
-    alignItems: 'center',
-    justifyContent: 'center',
-    // marginLeft: 12,
-    // marginRight: 12,
-    // padding:20,
-  },
-  btn: {
-    width: "100%",
-    color: 'red',
-    margin: 20,
-    padding: 20
+  loader: {
+    paddingTop: windowHeight / 3,
   },
   fab: {
     position: 'absolute',
@@ -323,16 +162,10 @@ const styles = StyleSheet.create({
     zIndex: 10,
     backgroundColor: theme.colors.primary
   },
-  user_view: {
-    padding: '2%'
-  },
-  snackbar: {
-
-  },
   dropDown: {
     width: '50%',
-    height: '15%',
-  }
+  },
+  indicator: {}
 });
 
 export default RouteScreen;

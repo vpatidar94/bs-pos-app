@@ -8,6 +8,7 @@ import HomeScreen from './components/HomeScreen';
 import UserScreen from './components/UserScreen';
 import UserEditScreen from './components/UserEditScreen';
 import RouteScreen from './components/RouteScreen';
+import RouteEditScreen from './components/RouteEditScreen';
 import LogoutScreen from './components/LogoutScreen';
 import DashboardScreen from './components/DashboardScreen';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -51,6 +52,14 @@ const LandingScreen = () => (
      <Drawer.Screen
       name="Route"
       component={RouteScreen}
+      options={{
+        drawerItemStyle: { height: 0 }
+      }}
+    />
+
+     <Drawer.Screen
+      name="RouteAdd"
+      component={RouteEditScreen}
       options={{
         drawerItemStyle: { height: 0 }
       }}
