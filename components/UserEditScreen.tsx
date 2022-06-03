@@ -4,6 +4,7 @@ import { FAB, List, Snackbar, Provider, Surface, Dialog, Portal, Paragraph } fro
 import DropDown from "react-native-paper-dropdown";
 import { theme } from '../core/theme'
 import UserService from '../service/userService';
+import RouteService from '../service/routeService';
 import { localDataSet } from '../config/localDataSet';
 import TextInputCustom from '../components/common/TextInput'
 import ButtonCustom from '../components/common/Button'
@@ -11,24 +12,30 @@ import { UserVo, AclVo, UserEmpDepartmentDto, EmpDepartmentVo, DEPT_LIST } from 
 
 
 const UserServiceApi = new UserService()
+const RouteServiceApi = new RouteService();
+let filterDeptNameList =[];
 class UserEditScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       errors: {},
       snackbarStatus: false,
-      showDropDownStatus: true,
+      showTypeDropDownStatus: true,
+      showNameDropDownStatus: true,
       snackbarMsg: '',
       deptType: '',
-      deptName: '',
+      routeCounterId: '',
       showDialog: false,
-      userList: []
+      userList: [],
+      routeCountList: '',
+      showRouteCountDropDown: false
     }
   }
 
   componentDidMount() {
     // console.log("getTokenValue", this.getTokenValue());
     this.getUserList();
+    this.getRouteCountList();
     console.log("DEPT_LIST", DEPT_LIST);
   }
 
@@ -39,6 +46,21 @@ class UserEditScreen extends Component {
         if (result.status == 'SUCCESS') {
           this.setState({
             userList: result.body
+          })
+        }
+      })
+  }
+
+  getRouteCountList = () => {
+
+    this.setState({
+      loaderStatus: true
+    })
+    RouteServiceApi.getRouteList("")
+      .then(result => {
+        if (result.status == 'SUCCESS') {
+          this.setState({
+            routeCountList: result.body
           })
         }
       })
@@ -81,7 +103,7 @@ class UserEditScreen extends Component {
 
     userVo.emp = emp;
 
-    empDepartmentVo.name = this.state.deptName;
+    empDepartmentVo.routeCounterId = this.state.routeCounterId;
     empDepartmentVo.type = this.state.deptType;
     userEmpDepartmentDto.emp = userVo;
     userEmpDepartmentDto.dept = empDepartmentVo;
@@ -127,9 +149,15 @@ class UserEditScreen extends Component {
       snackbarStatus: false
     })
   }
-  setShowDropDown = (value) => {
+  setShowTypeDropDown = (deptType) => {
     this.setState({
-      showDropDownStatus: value
+      showTypeDropDownStatus: deptType
+    })
+  }
+
+  setShowNameDropDown = (value) => {
+    this.setState({
+      showNameDropDownStatus: value
     })
   }
 
@@ -139,16 +167,39 @@ class UserEditScreen extends Component {
     })
   }
 
-  setDeptValue = (deptType) => {
+  setDeptType = (deptType) => {
     this.setState({
       deptType: deptType,
+      showRouteCountDropDown: true
     })
-    this.showDialog(true);
+
+    let deptNameList = [];
+    const filterList = this.state.routeCountList.filter(value => {
+      if (deptType == value.type) {
+        let deptVo ={
+          label:value.name,
+          value:value._id
+        }
+        deptNameList.push(deptVo)
+      }
+    })
+    filterDeptNameList = deptNameList
+    console.log("DEPT_LIST",DEPT_LIST);
+    console.log("routeCountList", deptNameList)
+    // this.showDialog(true);
   }
 
   setDeptName = (deptName) => {
     this.setState({
-      deptName: deptName,
+      deptName: deptName
+    })
+    // this.showDialog(true);
+  }
+
+  setDeptName = (routeCounterId) => {
+    console.log("deptNamedeptName", routeCounterId);
+    this.setState({
+      routeCounterId: routeCounterId,
     })
     this.showDialog(false);
   }
@@ -234,13 +285,27 @@ class UserEditScreen extends Component {
             <DropDown
               label={"Type"}
               mode={"outlined"}
-              visible={this.state.showDropDownStatus}
-              showDropDown={() => this.setShowDropDown(true)}
-              onDismiss={() => this.setShowDropDown(false)}
+              visible={this.state.showTypeDropDownStatus}
+              showDropDown={() => this.setShowTypeDropDown(true)}
+              onDismiss={() => this.setShowTypeDropDown(false)}
               value={this.state.deptType}
-              setValue={(deptType) => this.setDeptValue(deptType)}
+              setValue={(deptType) => this.setDeptType(deptType)}
               list={DEPT_LIST}
             />
+
+            {this.state.showRouteCountDropDown &&
+              <DropDown
+                label={"Name"}
+                mode={"outlined"}
+                visible={this.state.showNameDropDownStatus}
+                showDropDown={() => this.setShowNameDropDown(true)}
+                onDismiss={() => this.setShowNameDropDown(false)}
+                value={this.state.routeCounterId}
+                setValue={(routeCounterId) => this.setDeptName(routeCounterId)}
+                list={filterDeptNameList}
+              />
+            }
+
             <View>
               <Portal>
                 <Dialog visible={this.state.showDialog} onDismiss={() => this.showDialog(false)}>

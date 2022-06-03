@@ -3349,10 +3349,10 @@
     "chalk" "^2.4.1"
     "q" "^1.1.2"
 
-"codeartist-core@^0.0.22":
-  "integrity" "sha512-mARehF7BmoHzfvp1bSvrWHgK6NO92vPeE+i9g/ZCkHk5MLPUQN39Zb7v1PdDUwjp8NKfOiH72yNIIovVS1xoVg=="
-  "resolved" "https://registry.npmjs.org/codeartist-core/-/codeartist-core-0.0.22.tgz"
-  "version" "0.0.22"
+"codeartist-core@^0.0.27":
+  "integrity" "sha512-RIf4XWvjMswXXDSUoXTrgo+5IXUkoR4zZt6dxYu58ZYMjgTlKYtPVCAkBp3t+qPX6t5sGxJflGKCYec5WFttnQ=="
+  "resolved" "https://registry.npmjs.org/codeartist-core/-/codeartist-core-0.0.27.tgz"
+  "version" "0.0.27"
 
 "collection-visit@^1.0.0":
   "integrity" "sha1-S8A3PBZLwykbTTaMgpzxqApZ3KA="
