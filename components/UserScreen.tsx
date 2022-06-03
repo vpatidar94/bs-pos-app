@@ -6,6 +6,7 @@ import { theme } from '../core/theme'
 import UserService from '../service/userService';
 import { localDataSet } from '../config/localDataSet';
 import { UserVo, AclVo, UserEmpDepartmentDto, EmpDepartmentVo, DEPT_LIST } from 'codeartist-core'
+import { ActivityIndicator } from 'react-native-paper';
 
 
 const UserServiceApi = new UserService()
@@ -14,21 +15,37 @@ class UserScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userList: []
+      userList: [],
+      loaderStatus: false
     }
   }
 
   componentDidMount() {
     // console.log("getTokenValue", this.getTokenValue());
+
+    this.getUserList();
+    // this.props.navigation.navigate.addListner('willFocus', this.reLoad);
+    const unsubscribe = this.props.navigation.addListener('state', (e) => {
+      // Prevent default action
+      this.reLoad();
+    });
+  }
+
+
+  reLoad = () => {
     this.getUserList();
   }
 
   getUserList = () => {
+    this.setState({
+      loaderStatus: true
+    })
     UserServiceApi.getUserList()
       .then(result => {
         if (result.status == 'SUCCESS') {
           this.setState({
-            userList: result.body
+            userList: result.body,
+            loaderStatus: false
           })
         }
       })
@@ -92,15 +109,24 @@ class UserScreen extends Component {
             onPress={this.addUser}
           />
 
-          {this.state.userList ?
-            <List.Section>
-              <List.Subheader>User List</List.Subheader>
-              <ScrollView>
-                {this.renderList()}
-              </ScrollView>
-            </List.Section>
-            : <Text> </Text>
-          }
+          {this.state.userList &&
+            <View>
+              {this.state.loaderStatus &&
+                <View style={styles.indicator_view}>
+                  <ActivityIndicator
+                    animating={this.state.loaderStatus}
+                    color={theme.colors.primary}
+                    size='large'
+                    style={styles.loader}
+                  />
+                </View>}
+              <List.Section>
+                {!this.state.loaderStatus && <List.Subheader>User List</List.Subheader>}
+                <ScrollView>
+                  {this.renderList()}
+                </ScrollView>
+              </List.Section>
+            </View>}
 
         </SafeAreaView>
       </Provider>

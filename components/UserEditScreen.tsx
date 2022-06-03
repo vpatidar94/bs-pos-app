@@ -44,7 +44,6 @@ class UserEditScreen extends Component {
   getUserList = () => {
     UserServiceApi.getUserList()
       .then(result => {
-        console.log("resultresult", result);
         if (result.status == 'SUCCESS') {
           this.setState({
             userList: result.body
