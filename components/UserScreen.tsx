@@ -56,12 +56,10 @@ class UserScreen extends Component {
   }
 
   renderList() {
-
-    console.log("his.state.userList", this.state.userList);
     return this.state.userList.map((value, index) => {
       return (<View key={index}>
         <List.Item
-          title={value.emp.nameF}
+          title={value.emp.nameF + " " + value.emp.nameF}
           onPress={() => this.selectedUser(value.emp._id)}
           right={() => <List.Icon icon="chevron-right" />}
         />
@@ -97,7 +95,9 @@ class UserScreen extends Component {
           {this.state.userList ?
             <List.Section>
               <List.Subheader>User List</List.Subheader>
-              {this.renderList()}
+              <ScrollView>
+                {this.renderList()}
+              </ScrollView>
             </List.Section>
             : <Text> </Text>
           }

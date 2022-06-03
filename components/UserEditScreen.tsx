@@ -9,11 +9,12 @@ import { localDataSet } from '../config/localDataSet';
 import TextInputCustom from '../components/common/TextInput'
 import ButtonCustom from '../components/common/Button'
 import { UserVo, AclVo, UserEmpDepartmentDto, EmpDepartmentVo, DEPT_LIST } from 'codeartist-core'
+import { ActivityIndicator } from 'react-native-paper';
 
 
 const UserServiceApi = new UserService()
 const RouteServiceApi = new RouteService();
-let filterDeptNameList =[];
+let filterDeptNameList = [];
 class UserEditScreen extends Component {
   constructor(props) {
     super(props);
@@ -28,7 +29,8 @@ class UserEditScreen extends Component {
       showDialog: false,
       userList: [],
       routeCountList: '',
-      showRouteCountDropDown: false
+      showRouteCountDropDown: false,
+      loaderStatus: false
     }
   }
 
@@ -53,9 +55,6 @@ class UserEditScreen extends Component {
 
   getRouteCountList = () => {
 
-    this.setState({
-      loaderStatus: true
-    })
     RouteServiceApi.getRouteList("")
       .then(result => {
         if (result.status == 'SUCCESS') {
@@ -74,65 +73,145 @@ class UserEditScreen extends Component {
       // error reading value
     }
   }
-  saveUser = () => {
-    const userAuthDto = {
-      email: this.state.email,
-      nameF: this.state.nameF,
-      nameL: this.state.nameL,
-      cell: this.state.cell
+
+  handleValidation = () => {
+    this.setState({
+      errors: {}
+    })
+    let errors = {}
+    let formIsValid = true
+    // Name
+
+    // Email
+    if (!this.state.email) {
+      formIsValid = false
+      errors['email'] = "Email can't be empty"
+    } else {
+      if (this.state.email) {
+        let lastAtPos = this.state.email.lastIndexOf('@')
+        let lastDotPos = this.state.email.lastIndexOf('.')
+        if (!(
+          lastAtPos < lastDotPos &&
+          lastAtPos > 0 &&
+          this.state.email.indexOf('@@') == -1 &&
+          lastDotPos > 2 &&
+          this.state.email.length - lastDotPos > 2
+        )
+        ) {
+          formIsValid = false
+          errors['email'] = 'Ooops! We need a valid email address.'
+        }
+      }
     }
 
-    const userEmpDepartmentDto = {} as UserEmpDepartmentDto;
-    const userVo = {} as UserVo;
-    const aclVo = {} as AclVo;
+    if (!this.state.nameF) {
+      formIsValid = false
+      errors['nameF'] = "Name can't be empty"
+    }
+    if (!this.state.nameL) {
+      formIsValid = false
+      errors['nameL'] = "Last Name can't be empty"
+    }
 
-    const empDepartmentVo = {} as EmpDepartmentVo;
+    if (!this.state.cell) {
+      formIsValid = false
+      errors['cell'] = "Cell can't be empty"
+    }
 
-    userVo.email = this.state.email;
-    userVo.nameF = this.state.nameF;
-    userVo.nameL = this.state.nameL;
-    userVo.cell = this.state.cell;
+    if (typeof this.state.cell !== "undefined") {
 
-    aclVo.role = "POS_EMP";
-    aclVo.orgId = "BS";
-    aclVo.brId = "BS";
-    aclVo.active = true;
+      var pattern = new RegExp(/^[0-9\b]+$/);
+      if (!pattern.test(this.state.cell)) {
+        formIsValid = false;
+        errors["cell"] = "Please enter only number.";
+      } else if (this.state.cell.length != 10) {
+        formIsValid = false;
+        errors["cell"] = "Please enter valid phone number.";
+      }
+    }
 
-    const emp = [];
-    emp.push(aclVo);
+    if (!this.state.deptType) {
+      formIsValid = false
+      errors['deptType'] = "Type can't be empty"
+    }
 
-    userVo.emp = emp;
+    if (!this.state.routeCounterId && this.state.deptType) {
+      formIsValid = false
+      errors['routeCounterId'] = "Name can't be empty"
+    }
 
-    empDepartmentVo.routeCounterId = this.state.routeCounterId;
-    empDepartmentVo.type = this.state.deptType;
-    userEmpDepartmentDto.emp = userVo;
-    userEmpDepartmentDto.dept = empDepartmentVo;
+    this.setState({ errors: errors })
+    return formIsValid
+  }
+  saveUser = () => {
 
-    UserServiceApi.updateUserInfo(userEmpDepartmentDto)
-      .then(result => {
-        console.log("resultresultresult", result);
-        if (result.status == 'SUCCESS') {
-          this.props.navigation.navigate('User');
-          this.setState({
-            snackbarStatus: true,
-            snackbarMsg: result.msg
-          })
-        }
-        if (result.status == 'FAIL') {
-          this.setState({
-            snackbarStatus: true,
-            snackbarMsg: result.msg
-          })
-        }
+    if (this.handleValidation()) {
+      this.setState({
+        loaderStatus: true
       })
-      .catch(err => {
-        if (err.status == 'FAIL') {
-          this.setState({
-            snackbarStatus: true,
-            snackbarMsg: err.msg
-          })
-        }
-      })
+      const userAuthDto = {
+        email: this.state.email,
+        nameF: this.state.nameF,
+        nameL: this.state.nameL,
+        cell: this.state.cell
+      }
+
+      const userEmpDepartmentDto = {} as UserEmpDepartmentDto;
+      const userVo = {} as UserVo;
+      const aclVo = {} as AclVo;
+
+      const empDepartmentVo = {} as EmpDepartmentVo;
+
+      userVo.email = this.state.email;
+      userVo.nameF = this.state.nameF;
+      userVo.nameL = this.state.nameL;
+      userVo.cell = this.state.cell;
+
+      aclVo.role = "POS_EMP";
+      aclVo.orgId = "BS";
+      aclVo.brId = "BS";
+      aclVo.active = true;
+
+      const emp = [];
+      emp.push(aclVo);
+
+      userVo.emp = emp;
+
+      empDepartmentVo.routeCounterId = this.state.routeCounterId;
+      empDepartmentVo.type = this.state.deptType;
+      userEmpDepartmentDto.emp = userVo;
+      userEmpDepartmentDto.dept = empDepartmentVo;
+
+      UserServiceApi.updateUserInfo(userEmpDepartmentDto)
+        .then(result => {
+          if (result.status == 'SUCCESS') {
+            this.setState({
+              snackbarStatus: true,
+              snackbarMsg: result.msg,
+              loaderStatus: false
+            })
+            setTimeout(() => {
+              this.props.navigation.navigate('User');
+            }, 2000);
+          }
+          if (result.status == 'FAIL') {
+            this.setState({
+              snackbarStatus: true,
+              snackbarMsg: result.msg,
+              loaderStatus: false
+            })
+          }
+        })
+        .catch(err => {
+          if (err.status == 'FAIL') {
+            this.setState({
+              snackbarStatus: true,
+              snackbarMsg: err.msg
+            })
+          }
+        })
+
+    }
 
   }
 
@@ -176,17 +255,14 @@ class UserEditScreen extends Component {
     let deptNameList = [];
     const filterList = this.state.routeCountList.filter(value => {
       if (deptType == value.type) {
-        let deptVo ={
-          label:value.name,
-          value:value._id
+        let deptVo = {
+          label: value.name,
+          value: value._id
         }
         deptNameList.push(deptVo)
       }
     })
     filterDeptNameList = deptNameList
-    console.log("DEPT_LIST",DEPT_LIST);
-    console.log("routeCountList", deptNameList)
-    // this.showDialog(true);
   }
 
   setDeptName = (deptName) => {
@@ -238,120 +314,131 @@ class UserEditScreen extends Component {
     return (
 
       <Provider>
-        <SafeAreaView style={styles.container}>
+        <ScrollView>
+          <SafeAreaView style={styles.container}>
 
 
-          <View style={styles.user_view}>
-            <TextInputCustom
-              label="Email"
-              returnKeyType="next"
-              value={this.state.email}
-              onChangeText={(email) => this.setState({ email })}
-              error={!!this.state.errors.email}
-              errorText={this.state.errors.email}
-              autoCapitalize="none"
-              autoCompleteType="email"
-              keyboardType="email-address"
-            />
-
-            <TextInputCustom
-              label="First Name"
-              returnKeyType="next"
-              value={this.state.nameF}
-              onChangeText={(nameF) => this.setState({ nameF })}
-              error={!!this.state.errors.nameF}
-              errorText={this.state.errors.nameF}
-              autoCapitalize="none"
-            />
-            <TextInputCustom
-              label="Last Name"
-              returnKeyType="next"
-              value={this.state.nameL}
-              onChangeText={(nameL) => this.setState({ nameL })}
-              error={!!this.state.errors.nameL}
-              errorText={this.state.errors.nameL}
-              autoCapitalize="none"
-            />
-            <TextInputCustom
-              label="Cell"
-              returnKeyType="next"
-              value={this.state.cell}
-              onChangeText={(cell) => this.setState({ cell })}
-              error={!!this.state.errors.cell}
-              errorText={this.state.errors.cell}
-              autoCapitalize="none"
-            />
-
-            <DropDown
-              label={"Type"}
-              mode={"outlined"}
-              visible={this.state.showTypeDropDownStatus}
-              showDropDown={() => this.setShowTypeDropDown(true)}
-              onDismiss={() => this.setShowTypeDropDown(false)}
-              value={this.state.deptType}
-              setValue={(deptType) => this.setDeptType(deptType)}
-              list={DEPT_LIST}
-            />
-
-            {this.state.showRouteCountDropDown &&
-              <DropDown
-                label={"Name"}
-                mode={"outlined"}
-                visible={this.state.showNameDropDownStatus}
-                showDropDown={() => this.setShowNameDropDown(true)}
-                onDismiss={() => this.setShowNameDropDown(false)}
-                value={this.state.routeCounterId}
-                setValue={(routeCounterId) => this.setDeptName(routeCounterId)}
-                list={filterDeptNameList}
+            <View style={styles.user_view}>
+              <TextInputCustom
+                label="Email"
+                returnKeyType="next"
+                value={this.state.email}
+                onChangeText={(email) => this.setState({ email })}
+                error={!!this.state.errors.email}
+                errorText={this.state.errors.email}
+                autoCapitalize="none"
+                autoCompleteType="email"
+                keyboardType="email-address"
               />
-            }
 
-            <View>
-              <Portal>
-                <Dialog visible={this.state.showDialog} onDismiss={() => this.showDialog(false)}>
-                  <Dialog.Title>{this.state.deptType} Name</Dialog.Title>
-                  <Dialog.Content>
-                    {/* <Paragraph>This is simple dialog</Paragraph> */}
-                    <TextInputCustom
-                      label="Name"
-                      returnKeyType="next"
-                      value={this.state.deptName}
-                      onChangeText={(deptName) => this.setState({ deptName })}
-                      autoCapitalize="none"
-                    />
-                  </Dialog.Content>
-                  <Dialog.Actions>
-                    <Button
-                      title="save"
-                      onPress={() => this.setDeptName(this.state.deptName)}
-                    />
-                    <Button
-                      title="cancel"
-                      onPress={() => this.cancel('')}
-                    />
-                  </Dialog.Actions>
-                </Dialog>
-              </Portal>
+              <TextInputCustom
+                label="First Name"
+                returnKeyType="next"
+                value={this.state.nameF}
+                onChangeText={(nameF) => this.setState({ nameF })}
+                error={!!this.state.errors.nameF}
+                errorText={this.state.errors.nameF}
+                autoCapitalize="none"
+              />
+              <TextInputCustom
+                label="Last Name"
+                returnKeyType="next"
+                value={this.state.nameL}
+                onChangeText={(nameL) => this.setState({ nameL })}
+                error={!!this.state.errors.nameL}
+                errorText={this.state.errors.nameL}
+                autoCapitalize="none"
+              />
+              <TextInputCustom
+                label="Cell"
+                returnKeyType="next"
+                value={this.state.cell}
+                onChangeText={(cell) => this.setState({ cell })}
+                error={!!this.state.errors.cell}
+                errorText={this.state.errors.cell}
+                autoCapitalize="none"
+              />
+
+              <DropDown
+                label={"Type"}
+                mode={"outlined"}
+                visible={this.state.showTypeDropDownStatus}
+                showDropDown={() => this.setShowTypeDropDown(true)}
+                onDismiss={() => this.setShowTypeDropDown(false)}
+                value={this.state.deptType}
+                setValue={(deptType) => this.setDeptType(deptType)}
+                list={DEPT_LIST}
+              />
+
+              {this.state.errors.deptType && <Text style={styles.error}>{this.state.errors.deptType}</Text>}
+
+              {this.state.showRouteCountDropDown &&
+                <DropDown
+                  label={"Name"}
+                  mode={"outlined"}
+                  visible={this.state.showNameDropDownStatus}
+                  showDropDown={() => this.setShowNameDropDown(true)}
+                  onDismiss={() => this.setShowNameDropDown(false)}
+                  value={this.state.routeCounterId}
+                  setValue={(routeCounterId) => this.setDeptName(routeCounterId)}
+                  list={filterDeptNameList}
+                />
+              }
+
+              {this.state.errors.routeCounterId && <Text style={styles.error}>{this.state.errors.routeCounterId}</Text>}
+
+              <View>
+                <Portal>
+                  <Dialog visible={this.state.showDialog} onDismiss={() => this.showDialog(false)}>
+                    <Dialog.Title>{this.state.deptType} Name</Dialog.Title>
+                    <Dialog.Content>
+                      {/* <Paragraph>This is simple dialog</Paragraph> */}
+                      <TextInputCustom
+                        label="Name"
+                        returnKeyType="next"
+                        value={this.state.deptName}
+                        onChangeText={(deptName) => this.setState({ deptName })}
+                        autoCapitalize="none"
+                      />
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                      <Button
+                        title="save"
+                        onPress={() => this.setDeptName(this.state.deptName)}
+                      />
+                      <Button
+                        title="cancel"
+                        onPress={() => this.cancel('')}
+                      />
+                    </Dialog.Actions>
+                  </Dialog>
+                </Portal>
+              </View>
+              <ActivityIndicator
+                animating={this.state.loaderStatus}
+                color={theme.colors.primary}
+                size='large'
+              />
+              <ButtonCustom mode="contained" onPress={this.saveUser}>
+                Add User
+            </ButtonCustom>
+
+              <ButtonCustom mode="contained" onPress={this.backMe}>
+                Back
+            </ButtonCustom>
+
+              <Snackbar
+                visible={this.state.snackbarStatus}
+                onDismiss={this.onDismissSnackBar}
+                style={styles.snackbar}
+              >
+                {this.state.snackbarMsg}
+              </Snackbar>
             </View>
-            <ButtonCustom mode="contained" onPress={this.saveUser}>
-              Add User
-            </ButtonCustom>
-
-            <ButtonCustom mode="contained" onPress={this.backMe}>
-              Back
-            </ButtonCustom>
-
-            <Snackbar
-              visible={this.state.snackbarStatus}
-              onDismiss={this.onDismissSnackBar}
-              style={styles.snackbar}
-            >
-              {this.state.snackbarMsg}
-            </Snackbar>
-          </View>
 
 
-        </SafeAreaView>
+          </SafeAreaView>
+        </ScrollView>
       </Provider>
     );
   }
@@ -393,7 +480,12 @@ const styles = StyleSheet.create({
   },
   snackbar: {
 
-  }
+  },
+  error: {
+    fontSize: 13,
+    color: theme.colors.error,
+    paddingTop: 8,
+  },
 });
 
 export default UserEditScreen;
