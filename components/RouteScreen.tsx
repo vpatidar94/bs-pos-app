@@ -30,7 +30,7 @@ class RouteScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      routeCountList: '',
+      routeCountList: [],
       loaderStatus: false
     }
   }
@@ -44,6 +44,10 @@ class RouteScreen extends Component {
   }
 
   reLoad = () => {
+    filterRouteCountList = []
+    this.setState({
+      routeCountList: []
+    })
     this.getRouteCountList();
   }
 
@@ -172,6 +176,8 @@ const styles = StyleSheet.create({
   },
   dropDown: {
     width: '50%',
+    paddingLeft: '4%',
+    paddingTop: '2%'
   },
   indicator: {}
 });
