@@ -205,11 +205,12 @@ class LoginScreen extends Component {
               <Text style={styles.forgot}>Forgot your password?</Text>
             </TouchableOpacity>
           </View> */}
-          <ActivityIndicator
+          {this.state.loaderStatus && <ActivityIndicator
             animating={this.state.loaderStatus}
             color={theme.colors.primary}
             size='large'
-          />
+          />}
+
           <ButtonCustom mode="contained" disabled={this.state.loaderStatus} onPress={this.loginMe}>
             Login
           </ButtonCustom>

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text, SafeAreaView, ScrollView, StyleSheet, TextInput, Button, View, FlatList, StatusBar } from "react-native";
+import { Text, SafeAreaView, ScrollView, StyleSheet, TextInput, Button, View, FlatList, StatusBar, Dimensions } from "react-native";
 import { FAB, List, Snackbar, Provider, Surface, Dialog, Portal, Paragraph } from 'react-native-paper';
 import DropDown from "react-native-paper-dropdown";
 import { theme } from '../core/theme'
@@ -8,6 +8,8 @@ import { localDataSet } from '../config/localDataSet';
 import { UserVo, AclVo, UserEmpDepartmentDto, EmpDepartmentVo, DEPT_LIST } from 'codeartist-core'
 import { ActivityIndicator } from 'react-native-paper';
 
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 const UserServiceApi = new UserService()
 
@@ -27,6 +29,9 @@ class UserScreen extends Component {
     // this.props.navigation.navigate.addListner('willFocus', this.reLoad);
     const unsubscribe = this.props.navigation.addListener('state', (e) => {
       // Prevent default action
+      this.setState({
+        userList: []
+      })
       this.reLoad();
     });
   }
@@ -112,7 +117,7 @@ class UserScreen extends Component {
           {this.state.userList &&
             <View>
               {this.state.loaderStatus &&
-                <View style={styles.indicator_view}>
+                <View>
                   <ActivityIndicator
                     animating={this.state.loaderStatus}
                     color={theme.colors.primary}
@@ -170,6 +175,9 @@ const styles = StyleSheet.create({
   },
   snackbar: {
 
+  },
+  loader: {
+    paddingTop: windowHeight / 3,
   }
 });
 

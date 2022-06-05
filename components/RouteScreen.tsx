@@ -37,6 +37,14 @@ class RouteScreen extends Component {
 
   componentDidMount() {
     this.getRouteCountList();
+    const unsubscribe = this.props.navigation.addListener('state', (e) => {
+      // Prevent default action
+      this.reLoad();
+    });
+  }
+
+  reLoad = () => {
+    this.getRouteCountList();
   }
 
   getRouteCountList = () => {

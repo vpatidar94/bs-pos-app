@@ -26,8 +26,18 @@ class RouteEditScreen extends Component {
 
   componentDidMount() {
 
+    const unsubscribe = this.props.navigation.addListener('state', (e) => {
+      // Prevent default action
+      this.reset();
+    });
   }
 
+  reset = () => {
+    this.setState({
+      updateDeptType: '',
+      updateDeptName: ''
+    })
+  }
   addUser = () => {
     this.setState({
       showList: false

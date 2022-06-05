@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text, SafeAreaView, ScrollView, StyleSheet, TextInput, Button, View, FlatList, StatusBar } from "react-native";
+import { Text, SafeAreaView, ScrollView, StyleSheet, TextInput, Button, View, FlatList, StatusBar, Dimensions } from "react-native";
 import { FAB, List, Snackbar, Provider, Surface, Dialog, Portal, Paragraph } from 'react-native-paper';
 import DropDown from "react-native-paper-dropdown";
 import { theme } from '../core/theme'
@@ -11,6 +11,8 @@ import ButtonCustom from '../components/common/Button'
 import { UserVo, AclVo, UserEmpDepartmentDto, EmpDepartmentVo, DEPT_LIST } from 'codeartist-core'
 import { ActivityIndicator } from 'react-native-paper';
 
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 const UserServiceApi = new UserService()
 const RouteServiceApi = new RouteService();
@@ -38,9 +40,22 @@ class UserEditScreen extends Component {
     // console.log("getTokenValue", this.getTokenValue());
     this.getUserList();
     this.getRouteCountList();
-    console.log("DEPT_LIST", DEPT_LIST);
+    const unsubscribe = this.props.navigation.addListener('state', (e) => {
+      // Prevent default action
+      this.reset();
+    });
   }
 
+  reset = () => {
+    this.setState({
+      email: "",
+      nameF: "",
+      nameL: "",
+      cell: "",
+      deptType: "",
+      routeCounterId: ""
+    })
+  }
   getUserList = () => {
     UserServiceApi.getUserList()
       .then(result => {
@@ -413,11 +428,22 @@ class UserEditScreen extends Component {
                   </Dialog>
                 </Portal>
               </View>
-              <ActivityIndicator
+
+              {this.state.loaderStatus &&
+                <View style={styles.indicator_view}>
+                  <ActivityIndicator
+                    animating={this.state.loaderStatus}
+                    color={theme.colors.primary}
+                    size='large'
+                    style={styles.loader}
+                  />
+                </View>}
+
+              {/* <ActivityIndicator
                 animating={this.state.loaderStatus}
                 color={theme.colors.primary}
                 size='large'
-              />
+              /> */}
               <ButtonCustom mode="contained" onPress={this.saveUser}>
                 Add User
             </ButtonCustom>
@@ -484,6 +510,8 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: theme.colors.error,
     paddingTop: 8,
+  },
+  indicator_view: {
   },
 });
 
