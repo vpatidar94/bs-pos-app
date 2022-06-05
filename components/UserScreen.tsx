@@ -125,12 +125,12 @@ class UserScreen extends Component {
                     style={styles.loader}
                   />
                 </View>}
-              <List.Section>
-                {!this.state.loaderStatus && <List.Subheader>User List</List.Subheader>}
-                <ScrollView>
+              <ScrollView>
+                <List.Section>
+                  {!this.state.loaderStatus && <List.Subheader>User List</List.Subheader>}
                   {this.renderList()}
-                </ScrollView>
-              </List.Section>
+                </List.Section>
+              </ScrollView>
             </View>}
 
         </SafeAreaView>

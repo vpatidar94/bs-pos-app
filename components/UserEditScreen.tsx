@@ -53,7 +53,8 @@ class UserEditScreen extends Component {
       nameL: "",
       cell: "",
       deptType: "",
-      routeCounterId: ""
+      routeCounterId: "",
+      errors: {}
     })
   }
   getUserList = () => {
@@ -230,6 +231,7 @@ class UserEditScreen extends Component {
   }
 
   backMe = () => {
+    this.reset();
     this.props.navigation.navigate('User');
   }
   selectedUser = (userId) => {
