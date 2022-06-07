@@ -5,7 +5,7 @@ import DropDown from "react-native-paper-dropdown";
 import { theme } from '../core/theme'
 import UserService from '../service/userService';
 import { localDataSet } from '../config/localDataSet';
-import { UserVo, AclVo, UserEmpDepartmentDto, EmpDepartmentVo, DEPT_LIST } from 'codeartist-core'
+import { UserVo, AclVo, UserEmpDepartmentDto, EmpDepartmentVo, DEPT_LIST, DEPT } from 'codeartist-core'
 import { ActivityIndicator } from 'react-native-paper';
 
 const windowWidth = Dimensions.get('window').width;
@@ -18,7 +18,8 @@ class UserScreen extends Component {
     super(props);
     this.state = {
       userList: [],
-      loaderStatus: false
+      loaderStatus: false,
+      filterRouteCountList: []
     }
   }
 
@@ -49,9 +50,9 @@ class UserScreen extends Component {
       .then(result => {
         if (result.status == 'SUCCESS') {
           this.setState({
-            userList: result.body,
+            routeCountList: result.body,
             loaderStatus: false
-          })
+          }, () => this.setDeptValue(DEPT.DISTRIBUTION))
         }
       })
   }
@@ -78,7 +79,7 @@ class UserScreen extends Component {
   }
 
   renderList() {
-    return this.state.userList.map((value, index) => {
+    return this.state.filterRouteCountList.map((value, index) => {
       return (<View key={index}>
         <List.Item
           title={value.emp.nameF + " " + value.emp.nameF}
@@ -93,6 +94,29 @@ class UserScreen extends Component {
     //   return (<View><Text>{value.name}</Text></View>);
     // });
   }
+
+  setShowDropDown = (value) => {
+    this.setState({
+      showDropDownStatus: value
+    })
+  }
+
+  setDeptValue = (deptType) => {
+    this.setState({
+      deptType: deptType,
+    })
+    const filterRouteCountList = this.state.routeCountList.filter((value) => {
+      return value.dept.type == deptType;
+    })
+
+    this.setState({
+      filterRouteCountList
+    })
+
+    this.renderList();
+
+  }
+
 
   // hideDialog = () => {
   //   this.setState({
@@ -114,7 +138,20 @@ class UserScreen extends Component {
             onPress={this.addUser}
           />
 
-          {this.state.userList &&
+          <View style={styles.dropDown}>
+            <DropDown
+              label={"Type"}
+              mode={"outlined"}
+              visible={this.state.showDropDownStatus}
+              showDropDown={() => this.setShowDropDown(true)}
+              onDismiss={() => this.setShowDropDown(false)}
+              value={this.state.deptType}
+              setValue={(deptType) => this.setDeptValue(deptType)}
+              list={DEPT_LIST}
+            />
+          </View>
+
+          {this.state.filterRouteCountList &&
             <View>
               {this.state.loaderStatus &&
                 <View>
@@ -178,7 +215,12 @@ const styles = StyleSheet.create({
   },
   loader: {
     paddingTop: windowHeight / 3,
-  }
+  },
+  dropDown: {
+    width: '50%',
+    paddingLeft: '4%',
+    paddingTop: '2%'
+  },
 });
 
 export default UserScreen;
