@@ -10,7 +10,7 @@ function getHomeMenuList () {
     }, {
         id: 3, sectionTitle: 'Router/Counter'
     }, {
-        id: 4, sectionTitle: 'Customer2'
+        id: 4, sectionTitle: 'Customer'
     }, {
         id: 5, sectionTitle: 'Customer2'
     }, {

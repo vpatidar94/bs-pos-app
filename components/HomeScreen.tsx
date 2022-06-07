@@ -35,6 +35,8 @@ class HomeScreen extends Component {
         break;
       case 3: this.props.navigation.navigate('Route');
         break;
+      case 4: this.props.navigation.navigate('Customer');
+        break;
 
     }
   }

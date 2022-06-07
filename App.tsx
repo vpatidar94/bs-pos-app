@@ -2,13 +2,15 @@ import { StatusBar } from 'expo-status-bar';
 import AsynStorage from '@react-native-async-storage/async-storage';
 import React, { Component } from "react";
 import { localDataSet } from '../BsPosApp/config/localDataSet';
-import { StyleSheet, Text, View,Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Dimensions } from 'react-native';
 import LoginScreen from './components/LoginScreen';
 import HomeScreen from './components/HomeScreen';
 import UserScreen from './components/UserScreen';
 import UserEditScreen from './components/UserEditScreen';
 import RouteScreen from './components/RouteScreen';
 import RouteEditScreen from './components/RouteEditScreen';
+import CustomerScreen from './components/CustomerScreen';
+import CustomerEditScreen from './components/CustomerEditScreen';
 import LogoutScreen from './components/LogoutScreen';
 import DashboardScreen from './components/DashboardScreen';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -41,7 +43,7 @@ const LandingScreen = () => (
       }}
     />
 
-     <Drawer.Screen
+    <Drawer.Screen
       name="UserAdd"
       component={UserEditScreen}
       options={{
@@ -49,7 +51,7 @@ const LandingScreen = () => (
       }}
     />
 
-     <Drawer.Screen
+    <Drawer.Screen
       name="Route"
       component={RouteScreen}
       options={{
@@ -57,9 +59,25 @@ const LandingScreen = () => (
       }}
     />
 
-     <Drawer.Screen
+    <Drawer.Screen
       name="RouteAdd"
       component={RouteEditScreen}
+      options={{
+        drawerItemStyle: { height: 0 }
+      }}
+    />
+
+    <Drawer.Screen
+      name="Customer"
+      component={CustomerScreen}
+      options={{
+        drawerItemStyle: { height: 0 }
+      }}
+    />
+
+     <Drawer.Screen
+      name="CustomerAdd"
+      component={CustomerEditScreen}
       options={{
         drawerItemStyle: { height: 0 }
       }}
@@ -146,8 +164,8 @@ const styles = StyleSheet.create({
     // alignItems: 'center',
     justifyContent: 'center',
   },
-  loader:{
-    paddingTop:windowHeight/2,
+  loader: {
+    paddingTop: windowHeight / 2,
   }
 });
 
