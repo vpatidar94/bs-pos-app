@@ -5,7 +5,7 @@ import DropDown from "react-native-paper-dropdown";
 import { theme } from '../core/theme'
 import CustomerService from '../service/customerService';
 import { localDataSet } from '../config/localDataSet';
-import { UserVo, AclVo, UserEmpDepartmentDto, EmpDepartmentVo, DEPT_LIST } from 'codeartist-core'
+import { UserVo, AclVo, UserEmpDepartmentDto, EmpDepartmentVo, DEPT_LIST, DEPT } from 'codeartist-core'
 import { ActivityIndicator } from 'react-native-paper';
 
 const windowWidth = Dimensions.get('window').width;
@@ -18,7 +18,8 @@ class CustomerScreen extends Component {
     super(props);
     this.state = {
       customerList: [],
-      loaderStatus: false
+      loaderStatus: false,
+      filterRouteCountList: []
     }
   }
 
@@ -49,9 +50,9 @@ class CustomerScreen extends Component {
       .then(result => {
         if (result.status == 'SUCCESS') {
           this.setState({
-            customerList: result.body,
+            routeCountList: result.body,
             loaderStatus: false
-          })
+          }, () => this.setDeptValue(DEPT.DISTRIBUTION))
         }
       })
   }
@@ -77,8 +78,30 @@ class CustomerScreen extends Component {
     console.log("jai ram ji ki", customerId);
   }
 
+  setShowDropDown = (value) => {
+    this.setState({
+      showDropDownStatus: value
+    })
+  }
+
+  setDeptValue = (deptType) => {
+    this.setState({
+      deptType: deptType,
+    })
+    const filterRouteCountList = this.state.routeCountList.filter((value) => {
+      return value.custType.type == deptType;
+    })
+
+    this.setState({
+      filterRouteCountList
+    })
+
+    this.renderList();
+
+  }
+
   renderList() {
-    return this.state.customerList.map((value, index) => {
+    return this.state.filterRouteCountList.map((value, index) => {
       return (<View key={index}>
         <List.Item
           title={value.cust.nameF + " " + value.cust.nameF}
@@ -114,7 +137,20 @@ class CustomerScreen extends Component {
             onPress={this.addUser}
           />
 
-          {this.state.customerList &&
+          <View style={styles.dropDown}>
+            <DropDown
+              label={"Type"}
+              mode={"outlined"}
+              visible={this.state.showDropDownStatus}
+              showDropDown={() => this.setShowDropDown(true)}
+              onDismiss={() => this.setShowDropDown(false)}
+              value={this.state.deptType}
+              setValue={(deptType) => this.setDeptValue(deptType)}
+              list={DEPT_LIST}
+            />
+          </View>
+
+          {this.state.filterRouteCountList &&
             <View>
               {this.state.loaderStatus &&
                 <View>
@@ -178,7 +214,12 @@ const styles = StyleSheet.create({
   },
   loader: {
     paddingTop: windowHeight / 3,
-  }
+  },
+  dropDown: {
+    width: '50%',
+    paddingLeft: '4%',
+    paddingTop: '2%'
+  },
 });
 
 export default CustomerScreen;
