@@ -1,22 +1,23 @@
 import React, { Component } from "react";
 import { Text, SafeAreaView, ScrollView, StyleSheet, TextInput, Button, View, TouchableOpacity, Image } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import AuthService from '../service/authService';
+import ProfileService from '../service/profileService';
 import { localDataSet } from '../config/localDataSet';
 import ButtonCustom from '../components/common/Button'
 import TextInputCustom from '../components/common/TextInput'
 import { theme } from '../core/theme'
 import { StackActions } from '@react-navigation/native';
-import { UserAuthDto } from 'codeartist-core';
+import { UserPasswordDto } from 'codeartist-core';
 import { ActivityIndicator } from 'react-native-paper';
 
-const AuthServiceApi = new AuthService()
+const ProfileServiceApi = new ProfileService()
 
-class LoginScreen extends Component {
+class UpdatePasswordScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       email: '',
+      oldPassword: '',
       password: '',
       actionMessage: '',
       alertBox: false,
@@ -36,7 +37,7 @@ class LoginScreen extends Component {
       const token = await localDataSet.getLocal('token');
       //const token = await AsyncStorage.getItem('token');
       if (token != null) {
-        this.props.navigation.navigate('landing');
+
       } else {
         this.props.navigation.navigate('login');
       }
@@ -78,6 +79,16 @@ class LoginScreen extends Component {
       }
     }
 
+    if (!this.state.oldPassword) {
+      formIsValid = false
+      errors['oldPassword'] = "Old Password can't be empty"
+    } else {
+      if (this.state.oldPassword.length < 5) {
+        formIsValid = false
+        errors['password'] = 'Old Password must least 5 characters long'
+      }
+    }
+
     if (!this.state.password) {
       formIsValid = false
       errors['password'] = "Password can't be empty"
@@ -92,41 +103,42 @@ class LoginScreen extends Component {
     return formIsValid
   }
 
-  loginMe = () => {
+  passwordUpdate = () => {
 
-    const userAuthDto = {} as UserAuthDto;
-    userAuthDto.email = this.state.email;
-    userAuthDto.password = this.state.password;
+    const userPasswordDto = {} as UserPasswordDto;
+    userPasswordDto.email = this.state.email;
+    userPasswordDto.oldPassword = this.state.oldPassword;
+    userPasswordDto.password = this.state.password;
 
     if (this.handleValidation()) {
       this.setState({
         loaderStatus: true
       })
-      AuthServiceApi.loginInfo(userAuthDto)
+      ProfileServiceApi.updatePassword(userPasswordDto)
         .then(result => {
           console.log("result", result.body);
           if (result.status == 'SUCCESS') {
-            if (result.body.token) {
-              localDataSet.setLocal('token', result.body.token);
-              // this.props.navigation.navigate('landing');
-              this.setState({
-                loaderStatus: false
-              })
-              if (result.body.changePassword) {
-                this.props.navigation.dispatch(
-                  StackActions.replace('updatepassword')
-                );
-                console.log("change password userpassword")
-              } else {
-                this.props.navigation.dispatch(
-                  StackActions.replace('landing')
-                );
-              }
-            }
+            this.props.navigation.dispatch(
+              StackActions.replace('landing')
+            );
+            // if (result.body.token) {
+            //   localDataSet.setLocal('token', result.body.token);
+            //   // this.props.navigation.navigate('landing');
+            //   this.setState({
+            //     loaderStatus: false
+            //   })
+            //   if (result.body.changePassword) {
+            //     console.log("change password")
+            //   } else {
+            //     this.props.navigation.dispatch(
+            //       StackActions.replace('landing')
+            //     );
+            //   }
+            // }
           } else {
 
             this.setState({
-              actionMessage: result.msg,
+              actionMessage: result.message,
               alertBox: true,
               loaderStatus: false
             })
@@ -151,43 +163,6 @@ class LoginScreen extends Component {
             paddingHorizontal: 20,
           }}
         >
-          {/* <Text style={styles.label}>User Name</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={(email) => this.setState({ email })}
-            placeholder="Enter User Name"
-            value={this.state.email}
-          />
-          <View>
-            <Text>
-              {this.state.errors.email}
-            </Text>
-          </View>
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={(password) => this.setState({ password })}
-            placeholder="Enter User Password"
-            value={this.state.password}
-          />
-          <View style={styles.btnView}>
-            <Button
-              style={styles.btn}
-              title="Login"
-              onPress={this.loginMe}
-            />
-          </View>
-
-          {this.state.alertBox ? <View>
-            <Text>{this.state.actionMessage} </Text>
-          </View> : <Text> </Text>} */}
-          {/* <View style={styles.logo_view}>
-            <Image
-              source={require('../assets/logo-new.png')}
-              style={styles.logo}
-            />
-          </View> */}
-
           <View style={styles.logo_container}>
             <Image
               style={styles.logo}
@@ -210,6 +185,17 @@ class LoginScreen extends Component {
             iconName="email"
           />
           <TextInputCustom
+            label="Old Password"
+            returnKeyType="done"
+            value={this.state.oldPassword}
+            onChangeText={(oldPassword) => this.setState({ oldPassword })}
+            error={!!this.state.errors.oldPassword}
+            errorText={this.state.errors.oldPassword}
+            disabled={this.state.loaderStatus}
+            secureTextEntry
+            iconName="lock"
+          />
+          <TextInputCustom
             label="Password"
             returnKeyType="done"
             value={this.state.password}
@@ -220,33 +206,20 @@ class LoginScreen extends Component {
             secureTextEntry
             iconName="lock"
           />
-          {/* <View style={styles.forgotPassword}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('ResetPasswordScreen')}
-            >
-              <Text style={styles.forgot}>Forgot your password?</Text>
-            </TouchableOpacity>
-          </View> */}
+
           {this.state.loaderStatus && <ActivityIndicator
             animating={this.state.loaderStatus}
             color={theme.colors.logo_color}
             size='large'
           />}
 
-          <ButtonCustom mode="contained" disabled={this.state.loaderStatus} onPress={this.loginMe}>
-            Login
+          <ButtonCustom mode="contained" disabled={this.state.loaderStatus} onPress={this.passwordUpdate}>
+            Update Password
           </ButtonCustom>
 
           {this.state.alertBox ? <View>
             <Text style={styles.loginFailed}>{this.state.actionMessage} </Text>
           </View> : <Text> </Text>}
-          {/* <View style={styles.row}>
-            <Text>Don’t have an account? </Text>
-            <TouchableOpacity onPress={() => navigation.replace('RegisterScreen')}>
-              <Text style={styles.link}>Sign up</Text>
-            </TouchableOpacity>
-          </View> */}
-
         </ScrollView>
       </SafeAreaView>
     );
@@ -311,4 +284,4 @@ const styles = StyleSheet.create({
 //   }
 // });
 
-export default LoginScreen;
+export default UpdatePasswordScreen;

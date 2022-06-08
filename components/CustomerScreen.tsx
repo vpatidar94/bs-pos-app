@@ -105,6 +105,7 @@ class CustomerScreen extends Component {
       return (<View key={index}>
         <List.Item
           title={value.cust.nameF + " " + value.cust.nameF}
+          left={props => <List.Icon icon="account-circle-outline" />}
           onPress={() => this.selectedUser(value.cust._id)}
           right={() => <List.Icon icon="chevron-right" />}
         />
@@ -156,7 +157,7 @@ class CustomerScreen extends Component {
                 <View>
                   <ActivityIndicator
                     animating={this.state.loaderStatus}
-                    color={theme.colors.primary}
+                    color={theme.colors.logo_color}
                     size='large'
                     style={styles.loader}
                   />
@@ -204,7 +205,7 @@ const styles = StyleSheet.create({
     margin: 16,
     right: 0,
     zIndex: 10,
-    backgroundColor: theme.colors.primary
+    backgroundColor: theme.colors.logo_color
   },
   user_view: {
     padding: '2%'

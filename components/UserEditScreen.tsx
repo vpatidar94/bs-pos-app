@@ -345,6 +345,7 @@ class UserEditScreen extends Component {
                 autoCapitalize="none"
                 autoCompleteType="email"
                 keyboardType="email-address"
+                iconName="email"
               />
 
               <TextInputCustom
@@ -355,6 +356,7 @@ class UserEditScreen extends Component {
                 error={!!this.state.errors.nameF}
                 errorText={this.state.errors.nameF}
                 autoCapitalize="none"
+                iconName="account"
               />
               <TextInputCustom
                 label="Last Name"
@@ -364,6 +366,7 @@ class UserEditScreen extends Component {
                 error={!!this.state.errors.nameL}
                 errorText={this.state.errors.nameL}
                 autoCapitalize="none"
+                iconName="account"
               />
               <TextInputCustom
                 label="Cell"
@@ -373,6 +376,7 @@ class UserEditScreen extends Component {
                 error={!!this.state.errors.cell}
                 errorText={this.state.errors.cell}
                 autoCapitalize="none"
+                iconName="phone"
               />
 
               <DropDown

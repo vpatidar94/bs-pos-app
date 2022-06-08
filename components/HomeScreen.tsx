@@ -44,19 +44,15 @@ class HomeScreen extends Component {
   render() {
     return (
       <SafeAreaView >
-        {/* <Card style={styles.card}>
-          <Text style={styles.sectionTitle}>Dashboard</Text>
-        </Card>
-        <Card style={styles.card}>
-          <Text style={styles.sectionTitle}>Dashboard</Text>
-        </Card> */}
         <FlatList
           data={this.state.dataSource}
           renderItem={({ item }) => (
             <View style={{ flexDirection: 'column', padding: '1%' }}>
-              <Card style={styles.card}>
-                <Text style={styles.sectionTitle} onPress={() => this.openMe(item.id)}>{item.sectionTitle}</Text>
-              </Card>
+              <Text onPress={() => this.openMe(item.id)}>
+                <Card style={styles.card} icon={item.icon}>
+                  <Text style={styles.sectionTitle}>{item.sectionTitle}</Text>
+                </Card>
+              </Text>
               {/* <Image style={styles.imageThumbnail} source={{ uri: item.src }} /> */}
             </View>
           )}

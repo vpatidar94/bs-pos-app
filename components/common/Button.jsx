@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
     width: '100%',
     marginVertical: 10,
     paddingVertical: 2,
+    backgroundColor:theme.colors.logo_color
   },
   text: {
     fontWeight: 'bold',

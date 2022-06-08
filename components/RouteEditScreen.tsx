@@ -149,6 +149,7 @@ class RouteEditScreen extends Component {
               error={!!this.state.errors.updateDeptName}
               errorText={this.state.errors.updateDeptName}
               autoCapitalize="none"
+              iconName="account"
             />
 
 

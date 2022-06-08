@@ -3,6 +3,7 @@ const domain = 'https://bs-pos.herokuapp.com/api/core/v1';
 
 exports.url = {
   USER_LOGIN: `${domain}/user/authenticate`,
+  USER_UPDATE_PASSWORD: `${domain}/user/update-password`,
 
 
   //USER 

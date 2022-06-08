@@ -1,8 +1,10 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome5';
+import { theme } from '../core/theme'
 const Card = props => {
   return (
-    <View style={{ ...styles.card, ...props.style }}>{props.children}</View>
+    <View style={{ ...styles.card, ...props.style }}><Icon name={props.icon} size={30} color={theme.colors.logo_color} />{props.children}</View>
   );
 };
 const styles = StyleSheet.create({

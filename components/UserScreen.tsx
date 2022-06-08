@@ -84,6 +84,7 @@ class UserScreen extends Component {
         <List.Item
           title={value.emp.nameF + " " + value.emp.nameF}
           onPress={() => this.selectedUser(value.emp._id)}
+          left={props => <List.Icon icon="account-circle-outline" />}
           right={() => <List.Icon icon="chevron-right" />}
         />
 
@@ -157,7 +158,7 @@ class UserScreen extends Component {
                 <View>
                   <ActivityIndicator
                     animating={this.state.loaderStatus}
-                    color={theme.colors.primary}
+                    color={theme.colors.logo_color}
                     size='large'
                     style={styles.loader}
                   />
@@ -205,7 +206,7 @@ const styles = StyleSheet.create({
     margin: 16,
     right: 0,
     zIndex: 10,
-    backgroundColor: theme.colors.primary
+    backgroundColor: theme.colors.logo_color
   },
   user_view: {
     padding: '2%'

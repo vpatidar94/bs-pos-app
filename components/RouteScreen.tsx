@@ -145,7 +145,7 @@ class RouteScreen extends Component {
                 <View style={styles.indicator_view}>
                   <ActivityIndicator
                     animating={this.state.loaderStatus}
-                    color={theme.colors.primary}
+                    color={theme.colors.logo_color}
                     size='large'
                     style={styles.loader}
                   />
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     margin: 16,
     right: 0,
     zIndex: 10,
-    backgroundColor: theme.colors.primary
+    backgroundColor: theme.colors.logo_color
   },
   dropDown: {
     width: '50%',

@@ -4,6 +4,7 @@ import React, { Component } from "react";
 import { localDataSet } from '../BsPosApp/config/localDataSet';
 import { StyleSheet, Text, View, Dimensions } from 'react-native';
 import LoginScreen from './components/LoginScreen';
+import UpdatePasswordScreen from './components/UpdatePasswordScreen';
 import HomeScreen from './components/HomeScreen';
 import UserScreen from './components/UserScreen';
 import UserEditScreen from './components/UserEditScreen';
@@ -16,6 +17,7 @@ import DashboardScreen from './components/DashboardScreen';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Icon from 'react-native-vector-icons/AntDesign';
 import 'react-native-gesture-handler';
 import { ActivityIndicator } from 'react-native-paper';
 
@@ -24,10 +26,30 @@ const windowHeight = Dimensions.get('window').height;
 
 const LandingScreen = () => (
   <Drawer.Navigator initialRouteName="Home">
-    <Drawer.Screen name="Home" component={HomeScreen} />
-    <Drawer.Screen name="Logout" component={LogoutScreen} />
+    <Drawer.Screen name="Home" component={HomeScreen}
+      options={{
+        drawerIcon: config => <Icon
+          size={23}
+          name={'appstore-o'}></Icon>
+      }}
+    />
+    <Drawer.Screen name="Logout" component={LogoutScreen} 
+     options={{
+      drawerIcon: config => <Icon
+        size={23}
+        name={'logout'}></Icon>
+    }}
+    />
     {/* <Drawer.Screen name="Profile" component={ProfileScreen} />
     <Drawer.Screen name="Logout" component={LogoutScreen} /> */}
+
+    {/* <Drawer.Screen
+      name="userpassword"
+      component={UpdatePasswordScreen}
+      options={{
+        drawerItemStyle: { height: 0 }
+      }}
+    /> */}
     <Drawer.Screen
       name="Dashboard"
       component={DashboardScreen}
@@ -75,7 +97,7 @@ const LandingScreen = () => (
       }}
     />
 
-     <Drawer.Screen
+    <Drawer.Screen
       name="CustomerAdd"
       component={CustomerEditScreen}
       options={{
@@ -128,6 +150,7 @@ class App extends Component {
         {this.state.initialRouteName ?
           <Stack.Navigator initialRouteName={this.state.initialRouteName} screenOptions={{ headerShown: false }}>
             <Stack.Screen name="login" component={LoginScreen} />
+            <Stack.Screen name="updatepassword" component={UpdatePasswordScreen} />
             <Stack.Screen name="landing" component={LandingScreen} />
             {/* <Stack.Screen name="dashboard" component={DashboardScreen} /> */}
           </Stack.Navigator> : <ActivityIndicator
