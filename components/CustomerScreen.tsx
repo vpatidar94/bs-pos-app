@@ -30,15 +30,16 @@ class CustomerScreen extends Component {
     // this.props.navigation.navigate.addListner('willFocus', this.reLoad);
     const unsubscribe = this.props.navigation.addListener('state', (e) => {
       // Prevent default action
-      this.setState({
-        customerList: []
-      })
       this.reLoad();
     });
   }
 
 
   reLoad = () => {
+    this.setState({
+      customerList: [],
+      filterRouteCountList: []
+    })
     this.getCustomerList();
   }
 
@@ -162,12 +163,12 @@ class CustomerScreen extends Component {
                     style={styles.loader}
                   />
                 </View>}
-              <ScrollView>
-                <List.Section>
-                  {!this.state.loaderStatus && <List.Subheader>Customer List</List.Subheader>}
+              <List.Section>
+                {!this.state.loaderStatus && <List.Subheader>Customer List</List.Subheader>}
+                <ScrollView style={{ height: 500 }}>
                   {this.renderList()}
-                </List.Section>
-              </ScrollView>
+                </ScrollView>
+              </List.Section>
             </View>}
 
         </SafeAreaView>

@@ -116,7 +116,7 @@ class RouteScreen extends Component {
   render() {
     return (
       <Provider>
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView>
 
           <FAB
             style={styles.fab}
@@ -142,7 +142,7 @@ class RouteScreen extends Component {
           {filterRouteCountList &&
             <View>
               {this.state.loaderStatus &&
-                <View style={styles.indicator_view}>
+                <View>
                   <ActivityIndicator
                     animating={this.state.loaderStatus}
                     color={theme.colors.logo_color}
@@ -152,7 +152,7 @@ class RouteScreen extends Component {
                 </View>}
               <List.Section>
                 {!this.state.loaderStatus && <List.Subheader>Router/Counter List</List.Subheader>}
-                <ScrollView>
+                <ScrollView style={{ height: 500 }}>
                   {this.renderList()}
                 </ScrollView>
               </List.Section>

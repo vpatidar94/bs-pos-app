@@ -1,4 +1,5 @@
 import { url } from '../config/url'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { localDataSet } from '../config/localDataSet';
 import decode from 'jwt-decode';
 
@@ -132,15 +133,11 @@ export default class AuthService {
       //    }
 
 
-      //    getProfile() {
-      //       const res = decode(localStorage.getItem('token'));
-
-      //       return res
-      //    }
-
       async getToken() {
             // Retrieves the user token from localStorage
-            return await localDataSet.getLocal('token')
+            const token = await AsyncStorage.getItem('token');
+            console.log("tokentokentokentoken", token)
+            return token != null ? JSON.parse(token) : null;
       }
 
       async setTokenToRequest() {
@@ -157,6 +154,19 @@ export default class AuthService {
             // } else {
             //       return axios.defaults.headers['Authorization'] = null;
             // }
+      }
+
+      async getProfile() {
+
+            const token = await this.getToken();
+            const res = decode(token);
+            return res
+      }
+
+      async getRole() {
+
+            const role = await this.getProfile();
+            return role.crols[0];
       }
 
 

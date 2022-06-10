@@ -1,10 +1,16 @@
 import React, { Component } from "react";
 import { Text, SafeAreaView, StyleSheet, TextInput, Button, View, FlatList, Image, Dimensions } from "react-native";
+import { localDataSet } from '../config/localDataSet';
 import Card from './Card';
-import { HomeMenuList } from './HomeMenuList'
+import { ROLE } from 'codeartist-core'
+import { AdminMenuList } from '../role-drawer/AdminMenuList'
+import { EmployeeMenuList } from '../role-drawer/EmployeeMenuList'
+import AuthService from '../service/authService';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
+
+const AuthServiceeApi = new AuthService()
 
 class HomeScreen extends Component {
   constructor(props) {
@@ -20,14 +26,23 @@ class HomeScreen extends Component {
   };
 
   componentDidMount() {
-    this.setState({
-      dataSource: HomeMenuList.getHomeMenuList(),
-    });
+    this.getRole()
+  }
+
+  async getRole() {
+    let role = await AuthServiceeApi.getRole();
+
+    switch (role) {
+      case ROLE.POS_ADMIN: this.setState({ dataSource: AdminMenuList.getAdminMenuList() });
+        break;
+      case ROLE.POS_EMP: this.setState({ dataSource: EmployeeMenuList.getEmployeeMenuList() });
+        break;
+      // case ROLE.POS_CUST: this.props.navigation.navigate('Route');
+      //   break;
+    }
   }
 
   openMe = (id) => {
-    console.log("itemitemitem", id);
-
     switch (id) {
       case 1: this.props.navigation.navigate('Dashboard');
         break;
@@ -44,6 +59,7 @@ class HomeScreen extends Component {
   render() {
     return (
       <SafeAreaView >
+        {/* <Text> jjjj {this.state.dataSource}</Text>  */}
         <FlatList
           data={this.state.dataSource}
           renderItem={({ item }) => (

@@ -24,21 +24,24 @@ class UserScreen extends Component {
   }
 
   componentDidMount() {
-    // console.log("getTokenValue", this.getTokenValue());
 
+    this.getRole();
     this.getUserList();
     // this.props.navigation.navigate.addListner('willFocus', this.reLoad);
     const unsubscribe = this.props.navigation.addListener('state', (e) => {
-      // Prevent default action
-      this.setState({
-        userList: []
-      })
       this.reLoad();
     });
   }
 
+  async getRole() {
+    let role = await UserServiceApi.getProfile();
+  }
 
   reLoad = () => {
+    this.setState({
+      userList: [],
+      filterRouteCountList: []
+    })
     this.getUserList();
   }
 
@@ -75,7 +78,6 @@ class UserScreen extends Component {
   }
   selectedUser = (userId) => {
 
-    console.log("jai ram ji ki", userId);
   }
 
   renderList() {
@@ -90,10 +92,6 @@ class UserScreen extends Component {
 
       </View>)
     })
-    // console.log("this.state.routeCountListppp", this.state.routeCountList);
-    // return this.state.routeCountList.map( (value, i {
-    //   return (<View><Text>{value.name}</Text></View>);
-    // });
   }
 
   setShowDropDown = (value) => {
@@ -163,12 +161,13 @@ class UserScreen extends Component {
                     style={styles.loader}
                   />
                 </View>}
-              <ScrollView>
-                <List.Section>
-                  {!this.state.loaderStatus && <List.Subheader>User List</List.Subheader>}
+
+              <List.Section>
+                {!this.state.loaderStatus && <List.Subheader>User List</List.Subheader>}
+                <ScrollView style={{ height: 500 }}>
                   {this.renderList()}
-                </List.Section>
-              </ScrollView>
+                </ScrollView>
+              </List.Section>
             </View>}
 
         </SafeAreaView>
@@ -178,28 +177,8 @@ class UserScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-  },
   label: {
     marginLeft: 12,
-  },
-  btnView: {
-    width: "100%",
-    alignItems: 'center',
-    justifyContent: 'center',
-    // marginLeft: 12,
-    // marginRight: 12,
-    // padding:20,
-  },
-  btn: {
-    width: "100%",
-    color: 'red',
-    margin: 20,
-    padding: 20
   },
   fab: {
     position: 'absolute',
@@ -207,12 +186,6 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 10,
     backgroundColor: theme.colors.logo_color
-  },
-  user_view: {
-    padding: '2%'
-  },
-  snackbar: {
-
   },
   loader: {
     paddingTop: windowHeight / 3,

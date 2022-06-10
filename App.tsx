@@ -3,6 +3,7 @@ import AsynStorage from '@react-native-async-storage/async-storage';
 import React, { Component } from "react";
 import { localDataSet } from '../BsPosApp/config/localDataSet';
 import { StyleSheet, Text, View, Dimensions } from 'react-native';
+import AuthCheckScreen from './components/AuthCheckScreen';
 import LoginScreen from './components/LoginScreen';
 import UpdatePasswordScreen from './components/UpdatePasswordScreen';
 import HomeScreen from './components/HomeScreen';
@@ -33,12 +34,12 @@ const LandingScreen = () => (
           name={'appstore-o'}></Icon>
       }}
     />
-    <Drawer.Screen name="Logout" component={LogoutScreen} 
-     options={{
-      drawerIcon: config => <Icon
-        size={23}
-        name={'logout'}></Icon>
-    }}
+    <Drawer.Screen name="Logout" component={LogoutScreen}
+      options={{
+        drawerIcon: config => <Icon
+          size={23}
+          name={'logout'}></Icon>
+      }}
     />
     {/* <Drawer.Screen name="Profile" component={ProfileScreen} />
     <Drawer.Screen name="Logout" component={LogoutScreen} /> */}
@@ -142,7 +143,7 @@ class App extends Component {
     }
   }
   componentDidMount() {
-    this.getToken();
+    console.log(" this.getToken();", this.getToken())
   }
   render() {
     return (

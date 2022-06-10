@@ -439,7 +439,7 @@ class UserEditScreen extends Component {
                 <View style={styles.indicator_view}>
                   <ActivityIndicator
                     animating={this.state.loaderStatus}
-                    color={theme.colors.primary}
+                    color={theme.colors.logo_color}
                     size='large'
                     style={styles.loader}
                   />

@@ -6,7 +6,8 @@ export const localDataSet = {
   removeLocal,
   getLanguage,
   setLanguage,
-  getTokenValue
+  getTokenValue,
+  getRole
 }
 
 function setLocal (name, data) {
@@ -29,7 +30,13 @@ async function getLocal (name) {
 }
 
 function getTokenValue(token){
+  console.log("hhhh",decode(token))
   return decode(token);
+}
+
+function getRole(token){
+  console.log("getRole",getTokenValue(token))
+  return getTokenValue(token).crols;
 }
 
 function isTokenExpired (token) {
