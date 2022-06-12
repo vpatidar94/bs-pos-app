@@ -4,12 +4,27 @@ import { FAB, List, Snackbar, Provider, Surface, Dialog, Portal, Paragraph } fro
 import DropDown from "react-native-paper-dropdown";
 import { theme } from '../core/theme'
 import CustomerService from '../service/customerService';
+import Dropdown from '../components/dropdown'
 import { localDataSet } from '../config/localDataSet';
 import { UserVo, AclVo, UserEmpDepartmentDto, EmpDepartmentVo, DEPT_LIST, DEPT } from 'codeartist-core'
 import { ActivityIndicator } from 'react-native-paper';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
+
+const dptList = [
+  {
+    "label": "All",
+    "value": "ALL"
+  }, {
+    "label": "Distribution",
+    "value": "DISTRIBUTION"
+  }, {
+    "label": "Counter",
+    "value": "COUNTER"
+  }];
+
+const selectItem = { "label": "All", "value": "ALL" };
 
 const CustomerServiceApi = new CustomerService()
 
@@ -19,6 +34,7 @@ class CustomerScreen extends Component {
     this.state = {
       customerList: [],
       loaderStatus: false,
+      routeCountList: [],
       filterRouteCountList: []
     }
   }
@@ -89,9 +105,14 @@ class CustomerScreen extends Component {
     this.setState({
       deptType: deptType,
     })
-    const filterRouteCountList = this.state.routeCountList.filter((value) => {
-      return value.custType.type == deptType;
-    })
+    let filterRouteCountList = [];
+    if (deptType == "ALL") {
+      filterRouteCountList = this.state.routeCountList;
+    } else {
+      filterRouteCountList = this.state.routeCountList.filter((value) => {
+        return value.custType.type == deptType;
+      })
+    }
 
     this.setState({
       filterRouteCountList
@@ -140,6 +161,9 @@ class CustomerScreen extends Component {
           />
 
           <View style={styles.dropDown}>
+            <Dropdown label="Select Item" data={dptList} initalSelected={selectItem} onSelect={(value) => this.setDeptValue(value.value)} />
+          </View>
+          {/* <View style={styles.dropDown}>
             <DropDown
               label={"Type"}
               mode={"outlined"}
@@ -150,7 +174,7 @@ class CustomerScreen extends Component {
               setValue={(deptType) => this.setDeptValue(deptType)}
               list={DEPT_LIST}
             />
-          </View>
+          </View> */}
 
           {this.state.filterRouteCountList &&
             <View>
@@ -218,9 +242,8 @@ const styles = StyleSheet.create({
     paddingTop: windowHeight / 3,
   },
   dropDown: {
-    width: '50%',
     paddingLeft: '4%',
-    paddingTop: '2%'
+    paddingTop: '2%',
   },
 });
 

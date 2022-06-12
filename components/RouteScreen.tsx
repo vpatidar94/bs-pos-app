@@ -7,6 +7,7 @@ import RouteService from '../service/routeService';
 import { localDataSet } from '../config/localDataSet';
 import TextInputCustom from '../components/common/TextInput'
 import ButtonCustom from '../components/common/Button'
+import Dropdown from '../components/dropdown'
 import { UserVo, AclVo, UserEmpDepartmentDto, EmpDepartmentVo, DEPT_LIST, DEPT } from 'codeartist-core'
 import { ActivityIndicator } from 'react-native-paper';
 
@@ -22,7 +23,19 @@ const renderItem = ({ item }) => (
 );
 
 const windowHeight = Dimensions.get('window').height;
+const dptList = [
+  {
+    "label": "All",
+    "value": "ALL"
+  }, {
+    "label": "Distribution",
+    "value": "DISTRIBUTION"
+  }, {
+    "label": "Counter",
+    "value": "COUNTER"
+  }];
 
+const selectItem = { "label": "All", "value": "ALL" };
 
 const RouteServiceApi = new RouteService();
 let filterRouteCountList = [];
@@ -31,7 +44,8 @@ class RouteScreen extends Component {
     super(props);
     this.state = {
       routeCountList: [],
-      loaderStatus: false
+      loaderStatus: false,
+      selected: '',
     }
   }
 
@@ -86,12 +100,19 @@ class RouteScreen extends Component {
   }
 
   setDeptValue = (deptType) => {
+    console.log("deptType", deptType)
     this.setState({
       deptType: deptType,
     })
-    const filter = this.state.routeCountList.filter((value) => {
-      return value.type == deptType;
-    })
+    let filter = []
+    if (deptType == "ALL") {
+      filter = this.state.routeCountList;
+    } else {
+      filter = this.state.routeCountList.filter((value) => {
+        return value.type == deptType;
+      })
+    }
+
     filterRouteCountList = filter;
 
     this.renderList();
@@ -112,6 +133,10 @@ class RouteScreen extends Component {
     })
   }
 
+  setSelected(value) {
+    console.log("valuevalue", value.value)
+  }
+
 
   render() {
     return (
@@ -127,6 +152,10 @@ class RouteScreen extends Component {
           />
 
           <View style={styles.dropDown}>
+            <Dropdown label="Select Item" data={dptList} initalSelected={selectItem} onSelect={(value) => this.setDeptValue(value.value)} />
+          </View>
+
+          {/* <View style={styles.dropDown}>
             <DropDown
               label={"Type"}
               mode={"outlined"}
@@ -137,7 +166,7 @@ class RouteScreen extends Component {
               setValue={(deptType) => this.setDeptValue(deptType)}
               list={DEPT_LIST}
             />
-          </View>
+          </View> */}
 
           {filterRouteCountList &&
             <View>
@@ -175,9 +204,8 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.logo_color
   },
   dropDown: {
-    width: '50%',
     paddingLeft: '4%',
-    paddingTop: '2%'
+    paddingTop: '2%',
   },
   indicator: {}
 });
