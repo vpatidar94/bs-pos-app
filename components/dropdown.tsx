@@ -113,7 +113,6 @@ const styles = StyleSheet.create({
         shadowOffset: { height: 4, width: 10 },
         shadowOpacity: 0.5,
         marginLeft: '4%',
-        alignItems: 'center',
         borderRadius: 5,
         shadowColor: 'rgb(0, 0, 0)',
         shadowRadius: 5,
@@ -125,7 +124,7 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     item: {
-        paddingHorizontal: '28%',
+        paddingHorizontal: '8%',
         paddingVertical: 10,
         borderBottomWidth: 0.4,
     },

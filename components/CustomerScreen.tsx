@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Text, SafeAreaView, ScrollView, StyleSheet, TextInput, Button, View, FlatList, StatusBar, Dimensions } from "react-native";
 import { FAB, List, Snackbar, Provider, Surface, Dialog, Portal, Paragraph } from 'react-native-paper';
-import DropDown from "react-native-paper-dropdown";
 import { theme } from '../core/theme'
 import CustomerService from '../service/customerService';
 import Dropdown from '../components/dropdown'

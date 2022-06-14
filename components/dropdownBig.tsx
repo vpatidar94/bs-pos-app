@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: 'white',
-        height: 50,
+        height: 56,
         width: '100%',
         zIndex: 1,
         borderWidth: 1,
@@ -131,8 +131,8 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     item: {
-        paddingHorizontal: '37%',
-        paddingVertical: 10,
+        paddingHorizontal: '4%',
+        paddingVertical: 14,
         borderBottomWidth: 0.4,
     },
 });
