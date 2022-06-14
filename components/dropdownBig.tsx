@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
     Modal,
     View,
+    ScrollView
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 // import { Icon } from 'react-native-elements';
@@ -18,7 +19,7 @@ interface Props {
     onSelect: (item: { label: string; value: string }) => void;
 }
 
-const Dropdown: FC<Props> = ({ label, data, onSelect, initalSelected }) => {
+const DropdownBig: FC<Props> = ({ label, data, onSelect, initalSelected }) => {
     const DropdownButton = useRef();
     const [visible, setVisible] = useState(false);
     const [selected, setSelected] = useState(undefined);
@@ -71,18 +72,22 @@ const Dropdown: FC<Props> = ({ label, data, onSelect, initalSelected }) => {
     };
 
     return (
+        <ScrollView>
         <TouchableOpacity
             ref={DropdownButton}
             style={styles.button}
             onPress={toggleDropdown}
         >
-            {renderDropdown()}
+            
+                {renderDropdown()}
             <Text style={styles.buttonText}>
                 {(selected && selected.label) || label}
             </Text>
             <Text style={styles.icon}><Icon size={23} name={'chevron-small-down'} /> </Text>
             {/* <Icon style={styles.icon} type="font-awesome" name="chevron-down" /> */}
         </TouchableOpacity>
+        </ScrollView>
+        
     );
 };
 
@@ -92,7 +97,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'white',
         height: 50,
-        width: '50%',
+        width: '100%',
         zIndex: 1,
         borderWidth: 1,
         // borderColor: "thistle",
@@ -108,7 +113,8 @@ const styles = StyleSheet.create({
     },
     dropdown: {
         position: 'absolute',
-        width: '42%',
+        width: '90%',
+        height:'13%',
         // shadowRadius: 4,
         shadowOffset: { height: 4, width: 10 },
         shadowOpacity: 0.5,
@@ -125,10 +131,10 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     item: {
-        paddingHorizontal: '28%',
+        paddingHorizontal: '37%',
         paddingVertical: 10,
         borderBottomWidth: 0.4,
     },
 });
 
-export default Dropdown;
+export default DropdownBig;

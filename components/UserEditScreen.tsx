@@ -6,6 +6,7 @@ import { theme } from '../core/theme'
 import UserService from '../service/userService';
 import RouteService from '../service/routeService';
 import { localDataSet } from '../config/localDataSet';
+import Dropdown from '../components/dropdownBig'
 import TextInputCustom from '../components/common/TextInput'
 import ButtonCustom from '../components/common/Button'
 import { UserVo, AclVo, UserEmpDepartmentDto, EmpDepartmentVo, DEPT_LIST } from 'codeartist-core'
@@ -17,6 +18,9 @@ const windowHeight = Dimensions.get('window').height;
 const UserServiceApi = new UserService()
 const RouteServiceApi = new RouteService();
 let filterDeptNameList = [];
+
+
+let selectItem = { "label": "", "value": "" };
 class UserEditScreen extends Component {
   constructor(props) {
     super(props);
@@ -37,7 +41,6 @@ class UserEditScreen extends Component {
   }
 
   componentDidMount() {
-    // console.log("getTokenValue", this.getTokenValue());
     this.getUserList();
     this.getRouteCountList();
     const unsubscribe = this.props.navigation.addListener('state', (e) => {
@@ -54,8 +57,10 @@ class UserEditScreen extends Component {
       cell: "",
       deptType: "",
       routeCounterId: "",
-      errors: {}
+      errors: {},
     })
+    selectItem = { "label": "", "value": "" }
+    
   }
   getUserList = () => {
     UserServiceApi.getUserList()
@@ -197,6 +202,7 @@ class UserEditScreen extends Component {
       userEmpDepartmentDto.emp = userVo;
       userEmpDepartmentDto.dept = empDepartmentVo;
 
+
       UserServiceApi.updateUserInfo(userEmpDepartmentDto)
         .then(result => {
           if (result.status == 'SUCCESS') {
@@ -244,6 +250,7 @@ class UserEditScreen extends Component {
       snackbarStatus: false
     })
   }
+
   setShowTypeDropDown = (deptType) => {
     this.setState({
       showTypeDropDownStatus: deptType
@@ -263,21 +270,25 @@ class UserEditScreen extends Component {
   }
 
   setDeptType = (deptType) => {
-    this.setState({
-      deptType: deptType,
-      showRouteCountDropDown: true
-    })
-
     let deptNameList = [];
-    const filterList = this.state.routeCountList.filter(value => {
-      if (deptType == value.type) {
-        let deptVo = {
-          label: value.name,
-          value: value._id
-        }
-        deptNameList.push(deptVo)
-      }
-    })
+    if (this.state.routeCountList) {
+      this.setState({
+        deptType: deptType,
+        showRouteCountDropDown: true
+      }, () => {
+        const filterList = this.state.routeCountList.filter(value => {
+          if (deptType == value.type) {
+            let deptVo = {
+              label: value.name,
+              value: value._id
+            }
+            deptNameList.push(deptVo)
+          }
+        })
+      })
+
+    }
+
     filterDeptNameList = deptNameList
   }
 
@@ -314,17 +325,7 @@ class UserEditScreen extends Component {
 
       </View>)
     })
-    // console.log("this.state.routeCountListppp", this.state.routeCountList);
-    // return this.state.routeCountList.map( (value, i {
-    //   return (<View><Text>{value.name}</Text></View>);
-    // });
   }
-
-  // hideDialog = () => {
-  //   this.setState({
-  //     showDialog: false
-  //   })
-  // }
 
   render() {
     return (
@@ -332,7 +333,6 @@ class UserEditScreen extends Component {
       <Provider>
         <ScrollView>
           <SafeAreaView style={styles.container}>
-
 
             <View style={styles.user_view}>
               <TextInputCustom
@@ -379,7 +379,7 @@ class UserEditScreen extends Component {
                 iconName="phone"
               />
 
-              <DropDown
+              {/* <DropDown
                 label={"Type"}
                 mode={"outlined"}
                 visible={this.state.showTypeDropDownStatus}
@@ -388,21 +388,27 @@ class UserEditScreen extends Component {
                 value={this.state.deptType}
                 setValue={(deptType) => this.setDeptType(deptType)}
                 list={DEPT_LIST}
-              />
+              /> */}
+              <View style={styles.dropDown}>
+                <Dropdown label="Select Item" data={DEPT_LIST} initalSelected={selectItem} onSelect={(value) => this.setDeptType(value.value)} />
+              </View>
 
               {this.state.errors.deptType && <Text style={styles.error}>{this.state.errors.deptType}</Text>}
 
               {this.state.showRouteCountDropDown &&
-                <DropDown
-                  label={"Name"}
-                  mode={"outlined"}
-                  visible={this.state.showNameDropDownStatus}
-                  showDropDown={() => this.setShowNameDropDown(true)}
-                  onDismiss={() => this.setShowNameDropDown(false)}
-                  value={this.state.routeCounterId}
-                  setValue={(routeCounterId) => this.setDeptName(routeCounterId)}
-                  list={filterDeptNameList}
-                />
+                // <DropDown
+                //   label={"Name"}
+                //   mode={"outlined"}
+                //   visible={this.state.showNameDropDownStatus}
+                //   showDropDown={() => this.setShowNameDropDown(true)}
+                //   onDismiss={() => this.setShowNameDropDown(false)}
+                //   value={this.state.routeCounterId}
+                //   setValue={(routeCounterId) => this.setDeptName(routeCounterId)}
+                //   list={filterDeptNameList}
+                // />
+                <View style={styles.dropDown}>
+                  <Dropdown label="Select Item" data={filterDeptNameList} initalSelected={selectItem} onSelect={(value) => this.setDeptName(value.value)} />
+                </View>
               }
 
               {this.state.errors.routeCounterId && <Text style={styles.error}>{this.state.errors.routeCounterId}</Text>}
@@ -445,11 +451,6 @@ class UserEditScreen extends Component {
                   />
                 </View>}
 
-              {/* <ActivityIndicator
-                animating={this.state.loaderStatus}
-                color={theme.colors.primary}
-                size='large'
-              /> */}
               <ButtonCustom mode="contained" onPress={this.saveUser}>
                 Add User
             </ButtonCustom>
@@ -489,9 +490,6 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: 'center',
     justifyContent: 'center',
-    // marginLeft: 12,
-    // marginRight: 12,
-    // padding:20,
   },
   btn: {
     width: "100%",
@@ -518,6 +516,10 @@ const styles = StyleSheet.create({
     paddingTop: 8,
   },
   indicator_view: {
+  },
+  dropDown: {
+    paddingTop: '4%',
+    paddingBottom: '2%',
   },
 });
 
