@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Text, SafeAreaView, ScrollView, StyleSheet, TextInput, Button, View, FlatList, StatusBar } from "react-native";
 import { FAB, List, Snackbar, Provider, Surface, Dialog, Portal, Paragraph } from 'react-native-paper';
-import DropDown from "react-native-paper-dropdown";
+import Dropdown from '../components/dropdownBig'
 import { theme } from '../core/theme'
 import RouteService from '../service/routeService';
 import { localDataSet } from '../config/localDataSet';
@@ -12,6 +12,7 @@ import { ActivityIndicator } from 'react-native-paper';
 
 
 const RouteServiceApi = new RouteService();
+let selectItem = { "label": "", "value": "" };
 
 class RouteEditScreen extends Component {
   constructor(props) {
@@ -123,6 +124,13 @@ class RouteEditScreen extends Component {
     })
   }
 
+  setDeptType = (deptType) => {
+
+    this.setState({
+      updateDeptType: deptType
+    })
+  }
+
   render() {
     return (
 
@@ -131,7 +139,7 @@ class RouteEditScreen extends Component {
 
           <View style={styles.user_view}>
 
-            <DropDown
+            {/* <DropDown
               label={"Type"}
               mode={"outlined"}
               visible={this.state.showDropDownStatus}
@@ -140,7 +148,10 @@ class RouteEditScreen extends Component {
               value={this.state.updateDeptType}
               setValue={(updateDeptType) => this.setState({ updateDeptType })}
               list={DEPT_LIST}
-            />
+            /> */}
+            <View style={styles.dropDown}>
+              <Dropdown label="Select Item" data={DEPT_LIST} initalSelected={selectItem} onSelect={(value) => this.setDeptType(value.value)} />
+            </View>
             <TextInputCustom
               label="Name"
               returnKeyType="next"
@@ -214,9 +225,9 @@ const styles = StyleSheet.create({
 
   },
   dropDown: {
-    width: '50%',
-    height: '15%',
-  }
+    paddingTop: '4%',
+    paddingBottom: '2%',
+  },
 });
 
 export default RouteEditScreen;

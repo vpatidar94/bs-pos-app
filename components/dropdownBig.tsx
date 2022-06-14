@@ -35,7 +35,7 @@ const DropdownBig: FC<Props> = ({ label, data, onSelect, initalSelected }) => {
 
     const openDropdown = (): void => {
         DropdownButton.current.measure((_fx, _fy, _w, h, _px, py) => {
-            setDropdownTop(py + h);
+            setDropdownTop(py + h - 28);
         });
         setVisible(true);
     };
@@ -73,21 +73,21 @@ const DropdownBig: FC<Props> = ({ label, data, onSelect, initalSelected }) => {
 
     return (
         <ScrollView>
-        <TouchableOpacity
-            ref={DropdownButton}
-            style={styles.button}
-            onPress={toggleDropdown}
-        >
-            
+            <TouchableOpacity
+                ref={DropdownButton}
+                style={styles.button}
+                onPress={toggleDropdown}
+            >
+
                 {renderDropdown()}
-            <Text style={styles.buttonText}>
-                {(selected && selected.label) || label}
-            </Text>
-            <Text style={styles.icon}><Icon size={23} name={'chevron-small-down'} /> </Text>
-            {/* <Icon style={styles.icon} type="font-awesome" name="chevron-down" /> */}
-        </TouchableOpacity>
+                <Text style={styles.buttonText}>
+                    {(selected && selected.label) || label}
+                </Text>
+                <Text style={styles.icon}><Icon size={23} name={'chevron-small-down'} /> </Text>
+                {/* <Icon style={styles.icon} type="font-awesome" name="chevron-down" /> */}
+            </TouchableOpacity>
         </ScrollView>
-        
+
     );
 };
 
@@ -106,20 +106,20 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         flex: 1,
-        textAlign: 'center',
+        paddingLeft:'4%'
+        // textAlign: 'center',
     },
     icon: {
-        paddingRight: 8
+        paddingRight: '2%'
     },
     dropdown: {
         position: 'absolute',
-        width: '90%',
-        height:'13%',
+        width: '95%',
+        height: '13%',
         // shadowRadius: 4,
         shadowOffset: { height: 4, width: 10 },
         shadowOpacity: 0.5,
-        marginLeft: '5%',
-        alignItems: 'center',
+        marginLeft: '2%',
         borderRadius: 5,
         shadowColor: 'rgb(0, 0, 0)',
         shadowRadius: 5,

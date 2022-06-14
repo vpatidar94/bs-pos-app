@@ -34,7 +34,7 @@ const Dropdown: FC<Props> = ({ label, data, onSelect, initalSelected }) => {
 
     const openDropdown = (): void => {
         DropdownButton.current.measure((_fx, _fy, _w, h, _px, py) => {
-            setDropdownTop(py + h);
+            setDropdownTop(py + h - 28);
         });
         setVisible(true);
     };
@@ -101,18 +101,18 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         flex: 1,
-        textAlign: 'center',
+        paddingLeft: '8%'
     },
     icon: {
         paddingRight: 8
     },
     dropdown: {
         position: 'absolute',
-        width: '42%',
+        width: '43%',
         // shadowRadius: 4,
         shadowOffset: { height: 4, width: 10 },
         shadowOpacity: 0.5,
-        marginLeft: '5%',
+        marginLeft: '4%',
         alignItems: 'center',
         borderRadius: 5,
         shadowColor: 'rgb(0, 0, 0)',

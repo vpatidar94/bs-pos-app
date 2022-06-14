@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Text, SafeAreaView, ScrollView, StyleSheet, TextInput, Button, View, FlatList, StatusBar, Dimensions } from "react-native";
 import { FAB, List, Snackbar, Provider, Surface, Dialog, Portal, Paragraph } from 'react-native-paper';
-import DropDown from "react-native-paper-dropdown";
+import Dropdown from '../components/dropdownBig'
 import { theme } from '../core/theme'
 import CustomerService from '../service/customerService';
 import RouteService from '../service/routeService';
@@ -17,6 +17,7 @@ const windowHeight = Dimensions.get('window').height;
 const CustomerServiceApi = new CustomerService()
 const RouteServiceApi = new RouteService();
 let filterDeptNameList = [];
+let selectItem = { "label": "", "value": "" };
 class CustomerEditScreen extends Component {
   constructor(props) {
     super(props);
@@ -264,21 +265,23 @@ class CustomerEditScreen extends Component {
   }
 
   setDeptType = (deptType) => {
-    this.setState({
-      deptType: deptType,
-      showRouteCountDropDown: true
-    })
-
     let deptNameList = [];
-    const filterList = this.state.routeCountList.filter(value => {
-      if (deptType == value.type) {
-        let deptVo = {
-          label: value.name,
-          value: value._id
-        }
-        deptNameList.push(deptVo)
-      }
-    })
+    if (this.state.routeCountList) {
+      this.setState({
+        deptType: deptType,
+        showRouteCountDropDown: true
+      }, () => {
+        const filterList = this.state.routeCountList.filter(value => {
+          if (deptType == value.type) {
+            let deptVo = {
+              label: value.name,
+              value: value._id
+            }
+            deptNameList.push(deptVo)
+          }
+        })
+      })
+    }
     filterDeptNameList = deptNameList
   }
 
@@ -380,7 +383,7 @@ class CustomerEditScreen extends Component {
                 iconName="phone"
               />
 
-              <DropDown
+              {/* <DropDown
                 label={"Type"}
                 mode={"outlined"}
                 visible={this.state.showTypeDropDownStatus}
@@ -389,21 +392,27 @@ class CustomerEditScreen extends Component {
                 value={this.state.deptType}
                 setValue={(deptType) => this.setDeptType(deptType)}
                 list={DEPT_LIST}
-              />
+              /> */}
 
+              <View style={styles.dropDown}>
+                <Dropdown label="Select Item" data={DEPT_LIST} initalSelected={selectItem} onSelect={(value) => this.setDeptType(value.value)} />
+              </View>
               {this.state.errors.deptType && <Text style={styles.error}>{this.state.errors.deptType}</Text>}
 
               {this.state.showRouteCountDropDown &&
-                <DropDown
-                  label={"Name"}
-                  mode={"outlined"}
-                  visible={this.state.showNameDropDownStatus}
-                  showDropDown={() => this.setShowNameDropDown(true)}
-                  onDismiss={() => this.setShowNameDropDown(false)}
-                  value={this.state.routeCounterId}
-                  setValue={(routeCounterId) => this.setDeptName(routeCounterId)}
-                  list={filterDeptNameList}
-                />
+                // <DropDown
+                //   label={"Name"}
+                //   mode={"outlined"}
+                //   visible={this.state.showNameDropDownStatus}
+                //   showDropDown={() => this.setShowNameDropDown(true)}
+                //   onDismiss={() => this.setShowNameDropDown(false)}
+                //   value={this.state.routeCounterId}
+                //   setValue={(routeCounterId) => this.setDeptName(routeCounterId)}
+                //   list={filterDeptNameList}
+                // />
+                <View style={styles.dropDown}>
+                  <Dropdown label="Select Item" data={filterDeptNameList} initalSelected={selectItem} onSelect={(value) => this.setDeptName(value.value)} />
+                </View>
               }
 
               {this.state.errors.routeCounterId && <Text style={styles.error}>{this.state.errors.routeCounterId}</Text>}
@@ -519,6 +528,10 @@ const styles = StyleSheet.create({
     paddingTop: 8,
   },
   indicator_view: {
+  },
+  dropDown: {
+    paddingTop: '4%',
+    paddingBottom: '2%',
   },
 });
 
