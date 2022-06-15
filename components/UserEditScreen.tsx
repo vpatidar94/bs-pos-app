@@ -39,6 +39,16 @@ class UserEditScreen extends Component {
     }
   }
 
+  static getDerivedStateFromProps(props, state) {
+    if (props.route.params) {
+      return {
+        nameF: props.route.params.userVo.emp.nameF
+      };
+    }
+    return null;
+
+  }
+
   componentDidMount() {
     this.getUserList();
     this.getRouteCountList();
@@ -59,7 +69,7 @@ class UserEditScreen extends Component {
       errors: {},
     })
     selectItem = { "label": "", "value": "" }
-    
+
   }
   getUserList = () => {
     UserServiceApi.getUserList()

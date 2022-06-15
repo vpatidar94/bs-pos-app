@@ -91,8 +91,13 @@ class UserScreen extends Component {
   backMe = () => {
 
   }
-  selectedUser = (userId) => {
+  selectedUser = (userVo) => {
 
+    //console.log("userVo", userVo)
+
+    this.props.navigation.navigate('UserAdd',{
+      userVo
+    });
   }
 
   renderList() {
@@ -100,7 +105,7 @@ class UserScreen extends Component {
       return (<View key={index}>
         <List.Item
           title={value.emp.nameF + " " + value.emp.nameF}
-          onPress={() => this.selectedUser(value.emp._id)}
+          onPress={() => this.selectedUser(value)}
           left={props => <List.Icon icon="account-circle-outline" />}
           right={() => <List.Icon icon="chevron-right" />}
         />
