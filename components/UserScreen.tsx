@@ -23,7 +23,7 @@ const dptList = [
     "value": "COUNTER"
   }];
 
-const selectItem = { "label": "All", "value": "ALL" };
+let selectItem = { "label": "All", "value": "ALL" };
 
 const UserServiceApi = new UserService()
 
@@ -53,6 +53,7 @@ class UserScreen extends Component {
   }
 
   reLoad = () => {
+    selectItem = { "label": "All", "value": "ALL" };
     this.setState({
       userList: [],
       filterRouteCountList: []

@@ -8,7 +8,7 @@ import { localDataSet } from '../config/localDataSet';
 import Dropdown from '../components/dropdownBig'
 import TextInputCustom from '../components/common/TextInput'
 import ButtonCustom from '../components/common/Button'
-import { UserVo, AclVo, UserEmpDepartmentDto, EmpDepartmentVo, DEPT_LIST } from 'codeartist-core'
+import { UserVo, AclVo, UserEmpDepartmentDto, EmpDepartmentVo, DEPT_LIST, DEPT } from 'codeartist-core'
 import { ActivityIndicator } from 'react-native-paper';
 
 const windowWidth = Dimensions.get('window').width;
@@ -18,7 +18,7 @@ const UserServiceApi = new UserService()
 const RouteServiceApi = new RouteService();
 let filterDeptNameList = [];
 
-
+let selectItemDept = { "label": "", "value": "" };
 let selectItem = { "label": "", "value": "" };
 class UserEditScreen extends Component {
   constructor(props) {
@@ -35,15 +35,100 @@ class UserEditScreen extends Component {
       userList: [],
       routeCountList: '',
       showRouteCountDropDown: false,
-      loaderStatus: false
+      showDeptTypeDropDown: false,
+      loaderStatus: false,
+      // selectItem: { "label": "", "value": "" }
     }
   }
 
   static getDerivedStateFromProps(props, state) {
     if (props.route.params) {
-      return {
-        nameF: props.route.params.userVo.emp.nameF
-      };
+      if (state.nameF) {
+        let deptValue = ""
+        let deptType = props.route.params.userVo.dept.type
+        let routeCounterId = props.route.params.userVo.dept.routeCounterId
+        if (deptType === DEPT.DISTRIBUTION) {
+          deptValue = 'Distribution'
+        } else {
+          deptValue = 'Counter'
+        }
+        selectItemDept = { "label": deptValue, "value": props.route.params.userVo.dept.type };
+
+        let deptNameList = [];
+        if (state.routeCountList) {
+
+          state.routeCountList.filter(value => {
+            if (deptType == value.type) {
+              let deptVo = {
+                label: value.name,
+                value: value._id
+              }
+              if (routeCounterId === value._id) {
+                selectItem = { "label": value.name, "value": value._id };
+              }
+              deptNameList.push(deptVo)
+            }
+          })
+          filterDeptNameList = deptNameList
+          return {
+            email: state.email,
+            nameF: state.nameF,
+            nameL: state.nameL,
+            cell: state.cell,
+            deptType: deptType,
+            routeCounterId: routeCounterId,
+            // selectItem: selectItem,
+            showDeptTypeDropDown: true,
+            showRouteCountDropDown: true
+          };
+        }
+      } else {
+        let deptValue = '';
+        let deptType = props.route.params.userVo.dept.type
+        let routeCounterId = props.route.params.userVo.dept.routeCounterId
+        if (deptType === DEPT.DISTRIBUTION) {
+          deptValue = 'Distribution'
+        } else {
+          deptValue = 'Counter'
+        }
+        selectItemDept = { "label": deptValue, "value": props.route.params.userVo.dept.type };
+        // this.setDeptType(props.route.params.userVo.dept.type)
+
+        let deptNameList = [];
+        if (state.routeCountList) {
+
+          state.routeCountList.filter(value => {
+            if (deptType == value.type) {
+              let deptVo = {
+                label: value.name,
+                value: value._id
+              }
+              if (routeCounterId === value._id) {
+                selectItem = { "label": value.name, "value": value._id };
+              }
+              deptNameList.push(deptVo)
+            }
+          })
+          filterDeptNameList = deptNameList
+          return {
+            email: props.route.params.userVo.emp.email,
+            nameF: props.route.params.userVo.emp.nameF,
+            nameL: props.route.params.userVo.emp.nameF,
+            cell: props.route.params.userVo.emp.cell,
+            deptType: props.route.params.userVo.dept.deptType,
+            // selectItem: selectItem,
+            routeCounterId: props.route.params.userVo.dept.routeCounterId,
+            showDeptTypeDropDown: true,
+            showRouteCountDropDown: true
+          };
+        }
+
+        // deptNameList.filter(value => {
+        //   if (routeCounterId === value.value) {
+        //     selectItem = { "label": value.label, "value": value.value };
+        //   }
+        // })
+      }
     }
     return null;
 
@@ -54,11 +139,19 @@ class UserEditScreen extends Component {
     this.getRouteCountList();
     const unsubscribe = this.props.navigation.addListener('state', (e) => {
       // Prevent default action
-      this.reset();
+      // this.reset();
     });
   }
 
+  componentWillUnmount() {
+    console.log("jai ram ji ki")
+  }
+
+
   reset = () => {
+    this.props.route.params = ''
+    selectItemDept = { "label": "", "value": "" },
+      selectItem = { "label": "", "value": "" }
     this.setState({
       email: "",
       nameF: "",
@@ -67,9 +160,9 @@ class UserEditScreen extends Component {
       deptType: "",
       routeCounterId: "",
       errors: {},
+      showDeptTypeDropDown: false,
+      showRouteCountDropDown: false,
     })
-    selectItem = { "label": "", "value": "" }
-
   }
   getUserList = () => {
     UserServiceApi.getUserList()
@@ -88,7 +181,8 @@ class UserEditScreen extends Component {
       .then(result => {
         if (result.status == 'SUCCESS') {
           this.setState({
-            routeCountList: result.body
+            routeCountList: result.body,
+            showDeptTypeDropDown: true
           })
         }
       })
@@ -211,7 +305,6 @@ class UserEditScreen extends Component {
       userEmpDepartmentDto.emp = userVo;
       userEmpDepartmentDto.dept = empDepartmentVo;
 
-
       UserServiceApi.updateUserInfo(userEmpDepartmentDto)
         .then(result => {
           if (result.status == 'SUCCESS') {
@@ -301,15 +394,14 @@ class UserEditScreen extends Component {
     filterDeptNameList = deptNameList
   }
 
-  setDeptName = (deptName) => {
-    this.setState({
-      deptName: deptName
-    })
-    // this.showDialog(true);
-  }
+  // setDeptName = (deptName) => {
+  //   this.setState({
+  //     deptName: deptName
+  //   })
+  //   // this.showDialog(true);
+  // }
 
   setDeptName = (routeCounterId) => {
-    console.log("deptNamedeptName", routeCounterId);
     this.setState({
       routeCounterId: routeCounterId,
     })
@@ -322,7 +414,13 @@ class UserEditScreen extends Component {
     })
     this.showDialog(false);
   }
-
+  handleInputChange = (value) => {
+    this.setState({
+      email: value,
+      showDeptTypeDropDown: true
+    }, () => {
+    });
+  }
   renderList() {
 
     return this.state.userList.map((value, index) => {
@@ -348,7 +446,7 @@ class UserEditScreen extends Component {
                 label="Email"
                 returnKeyType="next"
                 value={this.state.email}
-                onChangeText={(email) => this.setState({ email })}
+                onChangeText={this.handleInputChange}
                 error={!!this.state.errors.email}
                 errorText={this.state.errors.email}
                 autoCapitalize="none"
@@ -398,9 +496,11 @@ class UserEditScreen extends Component {
                 setValue={(deptType) => this.setDeptType(deptType)}
                 list={DEPT_LIST}
               /> */}
-              <View style={styles.dropDown}>
-                <Dropdown label="Select Item" data={DEPT_LIST} initalSelected={selectItem} onSelect={(value) => this.setDeptType(value.value)} />
-              </View>
+              {this.state.showDeptTypeDropDown &&
+                <View style={styles.dropDown}>
+                  <Dropdown label="Select Item" data={DEPT_LIST} initalSelected={selectItemDept} onSelect={(value) => this.setDeptType(value.value)} />
+                </View>
+              }
 
               {this.state.errors.deptType && <Text style={styles.error}>{this.state.errors.deptType}</Text>}
 
@@ -460,9 +560,14 @@ class UserEditScreen extends Component {
                   />
                 </View>}
 
-              <ButtonCustom mode="contained" onPress={this.saveUser}>
+              {this.props.route.params ? <ButtonCustom mode="contained" onPress={this.saveUser}>
+                Edit User
+            </ButtonCustom> : <ButtonCustom mode="contained" onPress={this.saveUser}>
+                  Add User
+            </ButtonCustom>}
+              {/* <ButtonCustom mode="contained" onPress={this.saveUser}>
                 Add User
-            </ButtonCustom>
+            </ButtonCustom> */}
 
               <ButtonCustom mode="contained" onPress={this.backMe}>
                 Back

@@ -61,8 +61,10 @@ const LandingScreen = () => (
     <Drawer.Screen
       name="User"
       component={UserScreen}
+      unmountOnBlur={true}
       options={{
-        drawerItemStyle: { height: 0 }
+        drawerItemStyle: { height: 0 },
+        unmountOnBlur: true
       }}
     />
 
