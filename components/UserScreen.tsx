@@ -94,7 +94,7 @@ class UserScreen extends Component {
   }
   selectedUser = (userVo) => {
 
-    //console.log("userVo", userVo)
+    console.log("userVo", userVo)
 
     this.props.navigation.navigate('UserAdd',{
       userVo

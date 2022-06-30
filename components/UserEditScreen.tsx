@@ -20,6 +20,11 @@ let filterDeptNameList = [];
 
 let selectItemDept = { "label": "", "value": "" };
 let selectItem = { "label": "", "value": "" };
+let userEmpDepartmentDto = {} as UserEmpDepartmentDto;
+// let userVo = {} as UserVo;
+let aclVo = {} as AclVo;
+
+const empDepartmentVo = {} as EmpDepartmentVo;
 class UserEditScreen extends Component {
   constructor(props) {
     super(props);
@@ -37,14 +42,21 @@ class UserEditScreen extends Component {
       showRouteCountDropDown: false,
       showDeptTypeDropDown: false,
       loaderStatus: false,
+      userVo: {}
       // selectItem: { "label": "", "value": "" }
     }
   }
 
   static getDerivedStateFromProps(props, state) {
+    // console.log(" props.route.params", props.route.params)
     if (props.route.params) {
-      if (state.nameF) {
+      if (state.userVo.email) {
+        console.log("ifif", state.userVo.email)
         let deptValue = ""
+        userEmpDepartmentDto = props.route.params.userVo.dept;
+        // userEmpDepartmentDto = props.route.params.userVo;
+        // userEmpDepartmentDto.dept =  props.route.params.userVo.dept;
+        // userEmpDepartmentDto.emp =  props.route.params.userVo.emp;
         let deptType = props.route.params.userVo.dept.type
         let routeCounterId = props.route.params.userVo.dept.routeCounterId
         if (deptType === DEPT.DISTRIBUTION) {
@@ -79,11 +91,18 @@ class UserEditScreen extends Component {
             routeCounterId: routeCounterId,
             // selectItem: selectItem,
             showDeptTypeDropDown: true,
-            showRouteCountDropDown: true
+            showRouteCountDropDown: true,
+            userVo: state.userVo,
           };
         }
       } else {
         let deptValue = '';
+        console.log("pppppppp")
+        // userEmpDepartmentDto = props.route.params.userVo;
+        // userEmpDepartmentDto.dept =  props.route.params.userVo.dept;
+        // userEmpDepartmentDto.emp =  props.route.params.userVo.emp;
+
+        userEmpDepartmentDto = props.route.params.userVo.dept;
         let deptType = props.route.params.userVo.dept.type
         let routeCounterId = props.route.params.userVo.dept.routeCounterId
         if (deptType === DEPT.DISTRIBUTION) {
@@ -111,6 +130,7 @@ class UserEditScreen extends Component {
           })
           filterDeptNameList = deptNameList
           return {
+            userVo: props.route.params.userVo.emp,
             email: props.route.params.userVo.emp.email,
             nameF: props.route.params.userVo.emp.nameF,
             nameL: props.route.params.userVo.emp.nameF,
@@ -144,7 +164,7 @@ class UserEditScreen extends Component {
   }
 
   componentWillUnmount() {
-    console.log("jai ram ji ki")
+    // console.log("jai ram ji ki")
   }
 
 
@@ -268,73 +288,80 @@ class UserEditScreen extends Component {
   }
   saveUser = () => {
 
-    if (this.handleValidation()) {
-      this.setState({
-        loaderStatus: true
-      })
-      const userAuthDto = {
-        email: this.state.email,
-        nameF: this.state.nameF,
-        nameL: this.state.nameL,
-        cell: this.state.cell
-      }
+    console.log("userVo", this.state.userVo)
+    // if (this.handleValidation()) {
+    //   this.setState({
+    //     loaderStatus: true
+    //   })
+    //   const userAuthDto = {
+    //     email: this.state.email,
+    //     nameF: this.state.nameF,
+    //     nameL: this.state.nameL,
+    //     cell: this.state.cell
+    //   }
 
-      const userEmpDepartmentDto = {} as UserEmpDepartmentDto;
-      const userVo = {} as UserVo;
-      const aclVo = {} as AclVo;
+    //   // const userEmpDepartmentDto = {} as UserEmpDepartmentDto;
+    //   // const userVo = {} as UserVo;
+    //   // const aclVo = {} as AclVo;
 
-      const empDepartmentVo = {} as EmpDepartmentVo;
+    //   // const empDepartmentVo = {} as EmpDepartmentVo;
 
-      userVo.email = this.state.email;
-      userVo.nameF = this.state.nameF;
-      userVo.nameL = this.state.nameL;
-      userVo.cell = this.state.cell;
+    //   userVo.email = this.state.email;
+    //   userVo.nameF = this.state.nameF;
+    //   userVo.nameL = this.state.nameL;
+    //   userVo.cell = this.state.cell;
 
-      aclVo.role = "POS_EMP";
-      aclVo.orgId = "BS";
-      aclVo.brId = "BS";
-      aclVo.active = true;
+    //   aclVo.role = "POS_EMP";
+    //   aclVo.orgId = "BS";
+    //   aclVo.brId = "BS";
+    //   aclVo.active = true;
 
-      const emp = [];
-      emp.push(aclVo);
+    //   const emp = [];
+    //   emp.push(aclVo);
 
-      userVo.emp = emp;
+    //   userVo.emp = emp;
 
-      empDepartmentVo.routeCounterId = this.state.routeCounterId;
-      empDepartmentVo.type = this.state.deptType;
-      userEmpDepartmentDto.emp = userVo;
-      userEmpDepartmentDto.dept = empDepartmentVo;
+    //   console.log("before1111", userEmpDepartmentDto)
+    //   console.log("userVo", userVo)
+    //   console.log("empDepartmentVo", empDepartmentVo)
 
-      UserServiceApi.updateUserInfo(userEmpDepartmentDto)
-        .then(result => {
-          if (result.status == 'SUCCESS') {
-            this.setState({
-              snackbarStatus: true,
-              snackbarMsg: result.msg,
-              loaderStatus: false
-            })
-            setTimeout(() => {
-              this.props.navigation.navigate('User');
-            }, 2000);
-          }
-          if (result.status == 'FAIL') {
-            this.setState({
-              snackbarStatus: true,
-              snackbarMsg: result.msg,
-              loaderStatus: false
-            })
-          }
-        })
-        .catch(err => {
-          if (err.status == 'FAIL') {
-            this.setState({
-              snackbarStatus: true,
-              snackbarMsg: err.msg
-            })
-          }
-        })
+    //   empDepartmentVo.routeCounterId = this.state.routeCounterId;
+    //   empDepartmentVo.type = this.state.deptType;
+    //   userEmpDepartmentDto.emp = userVo;
+    //   userEmpDepartmentDto.dept = empDepartmentVo;
 
-    }
+    //   console.log("userEmpDepartmentDto", userEmpDepartmentDto)
+
+    //   UserServiceApi.updateUserInfo(userEmpDepartmentDto)
+    //     .then(result => {
+    //       if (result.status == 'SUCCESS') {
+    //         this.setState({
+    //           snackbarStatus: true,
+    //           snackbarMsg: result.msg,
+    //           loaderStatus: false
+    //         })
+    //         setTimeout(() => {
+    //           this.props.navigation.navigate('User');
+    //         }, 2000);
+    //       }
+    //       if (result.status == 'FAIL') {
+    //         this.setState({
+    //           snackbarStatus: true,
+    //           snackbarMsg: result.msg,
+    //           loaderStatus: false
+    //         })
+    //       }
+    //     })
+    //     .catch(err => {
+    //       if (err.status == 'FAIL') {
+    //         this.setState({
+    //           snackbarStatus: true,
+    //           snackbarMsg: err.msg
+    //         })
+    //       }
+    //     })
+
+    // }
 
   }
 
@@ -344,7 +371,7 @@ class UserEditScreen extends Component {
   }
   selectedUser = (userId) => {
 
-    console.log("jai ram ji ki", userId);
+    // console.log("jai ram ji ki", userId);
   }
 
   onDismissSnackBar = () => {
@@ -414,9 +441,39 @@ class UserEditScreen extends Component {
     })
     this.showDialog(false);
   }
-  handleInputChange = (value) => {
+  setEmail = (value) => {
+    let userVo = this.state.userVo;
+    userVo.email = value;
     this.setState({
-      email: value,
+      userVo: userVo,
+      showDeptTypeDropDown: true
+    }, () => {
+    });
+  }
+  setNameFirst = (value) => {
+    let userVo = this.state.userVo;
+    userVo.nameF = value;
+    this.setState({
+      userVo: userVo,
+      showDeptTypeDropDown: true
+    }, () => {
+    });
+  }
+  setNameLast = (value) => {
+    let userVo = this.state.userVo;
+    userVo.nameL = value;
+    this.setState({
+      userVo: userVo,
+      showDeptTypeDropDown: true
+    }, () => {
+    });
+  }
+
+  setCell= (value) => {
+    let userVo = this.state.userVo;
+    userVo.cell = value;
+    this.setState({
+      userVo: userVo,
       showDeptTypeDropDown: true
     }, () => {
     });
@@ -445,8 +502,8 @@ class UserEditScreen extends Component {
               <TextInputCustom
                 label="Email"
                 returnKeyType="next"
-                value={this.state.email}
-                onChangeText={this.handleInputChange}
+                value={this.state.userVo.email}
+                onChangeText={this.setEmail}
                 error={!!this.state.errors.email}
                 errorText={this.state.errors.email}
                 autoCapitalize="none"
@@ -458,8 +515,8 @@ class UserEditScreen extends Component {
               <TextInputCustom
                 label="First Name"
                 returnKeyType="next"
-                value={this.state.nameF}
-                onChangeText={(nameF) => this.setState({ nameF })}
+                value={this.state.userVo.nameF}
+                onChangeText={this.setNameFirst}
                 error={!!this.state.errors.nameF}
                 errorText={this.state.errors.nameF}
                 autoCapitalize="none"
@@ -468,8 +525,8 @@ class UserEditScreen extends Component {
               <TextInputCustom
                 label="Last Name"
                 returnKeyType="next"
-                value={this.state.nameL}
-                onChangeText={(nameL) => this.setState({ nameL })}
+                value={this.state.userVo.nameL}
+                onChangeText={this.setNameLast}
                 error={!!this.state.errors.nameL}
                 errorText={this.state.errors.nameL}
                 autoCapitalize="none"
@@ -478,8 +535,8 @@ class UserEditScreen extends Component {
               <TextInputCustom
                 label="Cell"
                 returnKeyType="next"
-                value={this.state.cell}
-                onChangeText={(cell) => this.setState({ cell })}
+                value={this.state.userVo.cell}
+                onChangeText={this.setCell}
                 error={!!this.state.errors.cell}
                 errorText={this.state.errors.cell}
                 autoCapitalize="none"
