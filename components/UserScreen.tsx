@@ -71,12 +71,17 @@ class UserScreen extends Component {
           this.setState({
             routeCountList: result.body,
             loaderStatus: false
-          }, () => this.setDeptValue(DEPT.DISTRIBUTION))
+          }, () => this.setDeptValue("ALL"))
         }
       })
   }
   addUser = () => {
-    this.props.navigation.navigate('UserAdd');
+    let userVo ="";
+    console.log("userVo",userVo)
+    // this.props.navigation.navigate('UserAdd');
+    this.props.navigation.navigate('UserAdd',{
+      userVo
+    });
   }
 
   async getTokenValue() {
@@ -96,7 +101,7 @@ class UserScreen extends Component {
 
     console.log("userVo", userVo)
 
-    this.props.navigation.navigate('UserAdd',{
+    this.props.navigation.navigate('UserEdit',{
       userVo
     });
   }
@@ -105,7 +110,7 @@ class UserScreen extends Component {
     return this.state.filterRouteCountList.map((value, index) => {
       return (<View key={index}>
         <List.Item
-          title={value.emp.nameF + " " + value.emp.nameF}
+          title={value.emp.nameF + " " + value.emp.nameL}
           onPress={() => this.selectedUser(value)}
           left={props => <List.Icon icon="account-circle-outline" />}
           right={() => <List.Icon icon="chevron-right" />}

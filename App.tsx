@@ -8,6 +8,7 @@ import LoginScreen from './components/LoginScreen';
 import UpdatePasswordScreen from './components/UpdatePasswordScreen';
 import HomeScreen from './components/HomeScreen';
 import UserScreen from './components/UserScreen';
+import UserAddScreen from './components/UserAddScreen';
 import UserEditScreen from './components/UserEditScreen';
 import RouteScreen from './components/RouteScreen';
 import RouteEditScreen from './components/RouteEditScreen';
@@ -70,6 +71,14 @@ const LandingScreen = () => (
 
     <Drawer.Screen
       name="UserAdd"
+      component={UserAddScreen}
+      options={{
+        drawerItemStyle: { height: 0 }
+      }}
+    />
+
+    <Drawer.Screen
+      name="UserEdit"
       component={UserEditScreen}
       options={{
         drawerItemStyle: { height: 0 }
