@@ -34,7 +34,6 @@ const dptList = [
     "value": "COUNTER"
   }];
 
-const selectItem = { "label": "All", "value": "ALL" };
 
 const RouteServiceApi = new RouteService();
 let filterRouteCountList = [];
@@ -42,9 +41,12 @@ class RouteScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      routeVo: {},
       routeCountList: [],
       loaderStatus: false,
       selected: '',
+      selectItem: { "label": "All", "value": "ALL" },
+      dropDownStatus: true
     }
   }
 
@@ -59,7 +61,10 @@ class RouteScreen extends Component {
   reLoad = () => {
     filterRouteCountList = []
     this.setState({
-      routeCountList: []
+      // routeVo: {},
+      routeCountList: [],
+      dropDownStatus: false,
+      selectItem: { "label": "All", "value": "ALL" }
     })
     this.getRouteCountList();
   }
@@ -74,13 +79,16 @@ class RouteScreen extends Component {
         if (result.status == 'SUCCESS') {
           this.setState({
             routeCountList: result.body,
-            loaderStatus: false
-          }, () => this.setDeptValue(DEPT.DISTRIBUTION))
+            loaderStatus: false,
+            dropDownStatus: true,
+          }, () => this.setDeptValue("ALL"))
         }
       })
   }
   addUser = () => {
-    this.props.navigation.navigate('RouteAdd');
+    this.props.navigation.navigate('RouteAdd', {
+      routeVo: this.state.routeVo
+    });
   }
 
   async getTokenValue() {
@@ -99,7 +107,6 @@ class RouteScreen extends Component {
   }
 
   setDeptValue = (deptType) => {
-    console.log("deptType", deptType)
     this.setState({
       deptType: deptType,
     })
@@ -118,22 +125,23 @@ class RouteScreen extends Component {
 
   }
 
-
+  selecteRoute(routeVo) {
+    this.props.navigation.navigate('RouteEdit', {
+      routeVo
+    });
+  }
 
   renderList() {
     return filterRouteCountList.map((value, index) => {
       return (<View key={index}>
         <List.Item
           title={value.name}
+          onPress={() => this.selecteRoute(value)}
           right={() => <List.Icon icon="chevron-right" />}
         />
 
       </View>)
     })
-  }
-
-  setSelected(value) {
-    console.log("valuevalue", value.value)
   }
 
 
@@ -149,23 +157,11 @@ class RouteScreen extends Component {
             color={theme.colors.surface}
             onPress={this.addUser}
           />
-
-          <View style={styles.dropDown}>
-            <Dropdown label="Select Item" data={dptList} initalSelected={selectItem} onSelect={(value) => this.setDeptValue(value.value)} />
-          </View>
-
-          {/* <View style={styles.dropDown}>
-            <DropDown
-              label={"Type"}
-              mode={"outlined"}
-              visible={this.state.showDropDownStatus}
-              showDropDown={() => this.setShowDropDown(true)}
-              onDismiss={() => this.setShowDropDown(false)}
-              value={this.state.deptType}
-              setValue={(deptType) => this.setDeptValue(deptType)}
-              list={DEPT_LIST}
-            />
-          </View> */}
+          {this.state.dropDownStatus &&
+            <View style={styles.dropDown}>
+              <Dropdown label="Select Item" data={dptList} initalSelected={this.state.selectItem} onSelect={(value) => this.setDeptValue(value.value)} />
+            </View>
+          }
 
           {filterRouteCountList &&
             <View>

@@ -150,7 +150,7 @@ class AuthCheckScreen extends Component {
     async getToken() {
         try {
             const token = await localDataSet.getLocal('token');
-            console.log("token", token)
+            // console.log("token", token)
             if (token != null) {
                 let role = localDataSet.getRole()[0];
                 role = role;

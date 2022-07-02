@@ -136,7 +136,7 @@ export default class AuthService {
       async getToken() {
             // Retrieves the user token from localStorage
             const token = await AsyncStorage.getItem('token');
-            console.log("tokentokentokentoken", token)
+            // console.log("tokentokentokentoken", token)
             return token != null ? JSON.parse(token) : null;
       }
 

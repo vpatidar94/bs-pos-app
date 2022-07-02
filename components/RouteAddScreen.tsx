@@ -13,72 +13,33 @@ import { ActivityIndicator } from 'react-native-paper';
 
 const RouteServiceApi = new RouteService();
 
-class RouteEditScreen extends Component {
+class RouteAddScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       errors: {},
       routeVo: {},
       snackbarStatus: false,
+      showDropDownStatus: true,
       snackbarMsg: '',
-      showDeptTypeDropDown: false,
       selectItem: { "label": "", "value": "" }
-
     }
-  }
-
-  static getDerivedStateFromProps(props, state) {
-    if (props.route.params.routeVo) {
-      if (state.routeVo.name) {
-        let deptValue = ""
-        let deptType = state.routeVo.type
-        if (deptType === DEPT.DISTRIBUTION) {
-          deptValue = 'Distribution'
-        } else {
-          deptValue = 'Counter'
-        }
-        return {
-          deptType: deptType,
-          routeVo: state.routeVo,
-          showDeptTypeDropDown: true,
-          selectItem: { "label": deptValue, "value": state.routeVo.type }
-
-        };
-
-      } else {
-        let deptValue = '';
-        let deptType = props.route.params.routeVo.type
-        if (deptType === DEPT.DISTRIBUTION) {
-          deptValue = 'Distribution'
-        } else {
-          deptValue = 'Counter'
-        }
-        // this.setDeptType(props.route.params.routeVo.type)
-
-
-        return {
-          routeVo: props.route.params.routeVo,
-          selectItem: { "label": deptValue, "value": props.route.params.routeVo.type },
-          showDeptTypeDropDown: true,
-        };
-      }
-    }
-    return null;
-
   }
 
   componentDidMount() {
-
-    const unsubscribe = this.props.navigation.addListener('state', (e) => {
-      // Prevent default action
-      // this.reset();
+    const unsubscribe = this.props.navigation.addListener('focus', (e) => {
+      this.reset();
+      this.setState({
+        showDropDownStatus: true,
+      })
     });
   }
 
   reset = () => {
     this.setState({
-      updateDeptType: '',
-      updateDeptName: ''
+      routeVo: {},
+      showDropDownStatus: false,
+      selectItem: { "label": "", "value": "" }
     })
   }
   addUser = () => {
@@ -120,10 +81,11 @@ class RouteEditScreen extends Component {
         if (result.status == 'SUCCESS') {
           this.setState({
             snackbarStatus: true,
-            snackbarMsg: result.msg
+            snackbarMsg: result.msg,
           })
 
           setTimeout(() => {
+            this.reset();
             this.props.navigation.navigate('Route');
           }, 2000);
         }
@@ -142,15 +104,6 @@ class RouteEditScreen extends Component {
           })
         }
       })
-  }
-
-  reset = () => {
-    this.props.route.params = ''
-    this.setState({
-      routeVo: {},
-      showDeptTypeDropDown: false,
-      selectItem: { "label": "", "value": "" }
-    })
   }
 
 
@@ -183,26 +136,26 @@ class RouteEditScreen extends Component {
         <SafeAreaView style={styles.container}>
 
           <View style={styles.user_view}>
-
-            {this.state.showDeptTypeDropDown &&
+            {this.state.showDropDownStatus &&
               <View style={styles.dropDown}>
                 <Dropdown label="Select Item" data={DEPT_LIST} initalSelected={this.state.selectItem} onSelect={(value) => this.setDeptType(value.value)} />
               </View>
             }
-            <TextInputCustom
-              label="Name"
-              returnKeyType="next"
-              value={this.state.routeVo.name}
-              onChangeText={this.setName}
-              error={!!this.state.errors.updateDeptName}
-              errorText={this.state.errors.updateDeptName}
-              autoCapitalize="none"
-              iconName="account"
-            />
-
+            {this.state.showDropDownStatus &&
+              <TextInputCustom
+                label="Name"
+                returnKeyType="next"
+                value={this.state.routeVo.name}
+                onChangeText={this.setName}
+                error={!!this.state.errors.updateDeptName}
+                errorText={this.state.errors.updateDeptName}
+                autoCapitalize="none"
+                iconName="account"
+              />
+            }
 
             <ButtonCustom mode="contained" onPress={this.updateRouteCount}>
-              Edit
+              Add
             </ButtonCustom>
 
             <ButtonCustom mode="contained" onPress={this.backMe}>
@@ -267,4 +220,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RouteEditScreen;
+export default RouteAddScreen;
