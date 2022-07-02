@@ -38,7 +38,8 @@ class UserAddScreen extends Component {
       loaderStatus: false,
       userVo: {},
       deptVo: {},
-      filterDeptNameList: []
+      filterDeptNameList: [],
+      viewStatus: true
     }
   }
 
@@ -47,7 +48,10 @@ class UserAddScreen extends Component {
     this.getRouteCountList();
     const unsubscribe = this.props.navigation.addListener('state', (e) => {
       // Prevent default action
-      // this.reset();
+      this.reset();
+      this.setState({
+        viewStatus: true,
+      })
     });
   }
 
@@ -60,6 +64,7 @@ class UserAddScreen extends Component {
       deptVo: {},
       showDeptTypeDropDown: false,
       showRouteCountDropDown: false,
+      viewStatus: false
     })
   }
   getUserList = () => {
@@ -187,13 +192,13 @@ class UserAddScreen extends Component {
       UserServiceApi.updateUserInfo(userEmpDepartmentDto)
         .then(result => {
           if (result.status == 'SUCCESS') {
-            this.reset()
             this.setState({
               snackbarStatus: true,
               snackbarMsg: result.msg,
               loaderStatus: false
             })
             setTimeout(() => {
+              this.reset()
               this.props.navigation.navigate('User');
             }, 2000);
           }
@@ -360,122 +365,124 @@ class UserAddScreen extends Component {
         <ScrollView>
           <SafeAreaView style={styles.container}>
 
-            <View style={styles.user_view}>
-              <TextInputCustom
-                label="Email"
-                returnKeyType="next"
-                value={this.state.userVo.email}
-                onChangeText={this.setEmail}
-                error={!!this.state.errors.email}
-                errorText={this.state.errors.email}
-                autoCapitalize="none"
-                autoCompleteType="email"
-                keyboardType="email-address"
-                iconName="email"
-              />
+            {this.state.viewStatus &&
+              <View style={styles.user_view}>
+                <TextInputCustom
+                  label="Email"
+                  returnKeyType="next"
+                  value={this.state.userVo.email}
+                  onChangeText={this.setEmail}
+                  error={!!this.state.errors.email}
+                  errorText={this.state.errors.email}
+                  autoCapitalize="none"
+                  autoCompleteType="email"
+                  keyboardType="email-address"
+                  iconName="email"
+                />
 
-              <TextInputCustom
-                label="First Name"
-                returnKeyType="next"
-                value={this.state.userVo.nameF}
-                onChangeText={this.setNameFirst}
-                error={!!this.state.errors.nameF}
-                errorText={this.state.errors.nameF}
-                autoCapitalize="none"
-                iconName="account"
-              />
-              <TextInputCustom
-                label="Last Name"
-                returnKeyType="next"
-                value={this.state.userVo.nameL}
-                onChangeText={this.setNameLast}
-                error={!!this.state.errors.nameL}
-                errorText={this.state.errors.nameL}
-                autoCapitalize="none"
-                iconName="account"
-              />
-              <TextInputCustom
-                label="Cell"
-                returnKeyType="next"
-                value={this.state.userVo.cell}
-                onChangeText={this.setCell}
-                error={!!this.state.errors.cell}
-                errorText={this.state.errors.cell}
-                autoCapitalize="none"
-                iconName="phone"
-              />
-              {this.state.showDeptTypeDropDown &&
-                <View style={styles.dropDown}>
-                  <Dropdown label="Select Item" data={DEPT_LIST} initalSelected={selectItemDept} onSelect={(value) => this.setDeptType(value.value)} />
+                <TextInputCustom
+                  label="First Name"
+                  returnKeyType="next"
+                  value={this.state.userVo.nameF}
+                  onChangeText={this.setNameFirst}
+                  error={!!this.state.errors.nameF}
+                  errorText={this.state.errors.nameF}
+                  autoCapitalize="none"
+                  iconName="account"
+                />
+                <TextInputCustom
+                  label="Last Name"
+                  returnKeyType="next"
+                  value={this.state.userVo.nameL}
+                  onChangeText={this.setNameLast}
+                  error={!!this.state.errors.nameL}
+                  errorText={this.state.errors.nameL}
+                  autoCapitalize="none"
+                  iconName="account"
+                />
+                <TextInputCustom
+                  label="Cell"
+                  returnKeyType="next"
+                  value={this.state.userVo.cell}
+                  onChangeText={this.setCell}
+                  error={!!this.state.errors.cell}
+                  errorText={this.state.errors.cell}
+                  autoCapitalize="none"
+                  iconName="phone"
+                />
+                {this.state.showDeptTypeDropDown &&
+                  <View style={styles.dropDown}>
+                    <Dropdown label="Select Item" data={DEPT_LIST} initalSelected={selectItemDept} onSelect={(value) => this.setDeptType(value.value)} />
+                  </View>
+                }
+
+                {this.state.errors.deptType && <Text style={styles.error}>{this.state.errors.deptType}</Text>}
+
+                {this.state.showRouteCountDropDown &&
+                  <View style={styles.dropDown}>
+                    <Dropdown label="Select Item" data={this.state.filterDeptNameList} initalSelected={selectItem} onSelect={(value) => this.setDeptName(value.value)} />
+                  </View>
+                }
+
+                {this.state.errors.routeCounterId && <Text style={styles.error}>{this.state.errors.routeCounterId}</Text>}
+
+                <View>
+                  <Portal>
+                    <Dialog visible={this.state.showDialog} onDismiss={() => this.showDialog(false)}>
+                      <Dialog.Title>{this.state.deptType} Name</Dialog.Title>
+                      <Dialog.Content>
+                        {/* <Paragraph>This is simple dialog</Paragraph> */}
+                        <TextInputCustom
+                          label="Name"
+                          returnKeyType="next"
+                          value={this.state.deptName}
+                          onChangeText={(deptName) => this.setState({ deptName })}
+                          autoCapitalize="none"
+                        />
+                      </Dialog.Content>
+                      <Dialog.Actions>
+                        <Button
+                          title="save"
+                          onPress={() => this.setDeptName(this.state.deptName)}
+                        />
+                        <Button
+                          title="cancel"
+                          onPress={() => this.cancel('')}
+                        />
+                      </Dialog.Actions>
+                    </Dialog>
+                  </Portal>
                 </View>
-              }
 
-              {this.state.errors.deptType && <Text style={styles.error}>{this.state.errors.deptType}</Text>}
-
-              {this.state.showRouteCountDropDown &&
-                <View style={styles.dropDown}>
-                  <Dropdown label="Select Item" data={this.state.filterDeptNameList} initalSelected={selectItem} onSelect={(value) => this.setDeptName(value.value)} />
-                </View>
-              }
-
-              {this.state.errors.routeCounterId && <Text style={styles.error}>{this.state.errors.routeCounterId}</Text>}
-
-              <View>
-                <Portal>
-                  <Dialog visible={this.state.showDialog} onDismiss={() => this.showDialog(false)}>
-                    <Dialog.Title>{this.state.deptType} Name</Dialog.Title>
-                    <Dialog.Content>
-                      {/* <Paragraph>This is simple dialog</Paragraph> */}
-                      <TextInputCustom
-                        label="Name"
-                        returnKeyType="next"
-                        value={this.state.deptName}
-                        onChangeText={(deptName) => this.setState({ deptName })}
-                        autoCapitalize="none"
-                      />
-                    </Dialog.Content>
-                    <Dialog.Actions>
-                      <Button
-                        title="save"
-                        onPress={() => this.setDeptName(this.state.deptName)}
-                      />
-                      <Button
-                        title="cancel"
-                        onPress={() => this.cancel('')}
-                      />
-                    </Dialog.Actions>
-                  </Dialog>
-                </Portal>
-              </View>
-
-              {this.state.loaderStatus &&
-                <View style={styles.indicator_view}>
-                  <ActivityIndicator
-                    animating={this.state.loaderStatus}
-                    color={theme.colors.logo_color}
-                    size='large'
-                    style={styles.loader}
-                  />
-                </View>}
-              <ButtonCustom mode="contained" onPress={this.saveUser}>
-                Add User
+                {this.state.loaderStatus &&
+                  <View style={styles.indicator_view}>
+                    <ActivityIndicator
+                      animating={this.state.loaderStatus}
+                      color={theme.colors.logo_color}
+                      size='large'
+                      style={styles.loader}
+                    />
+                  </View>}
+                <ButtonCustom mode="contained" onPress={this.saveUser}>
+                  Add User
             </ButtonCustom>
-              {/* <ButtonCustom mode="contained" onPress={this.saveUser}>
+                {/* <ButtonCustom mode="contained" onPress={this.saveUser}>
                 Add User
             </ButtonCustom> */}
 
-              <ButtonCustom mode="contained" onPress={this.backMe}>
-                Back
+                <ButtonCustom mode="contained" onPress={this.backMe}>
+                  Back
             </ButtonCustom>
 
-              <Snackbar
-                visible={this.state.snackbarStatus}
-                onDismiss={this.onDismissSnackBar}
-                style={styles.snackbar}
-              >
-                {this.state.snackbarMsg}
-              </Snackbar>
-            </View>
+                <Snackbar
+                  visible={this.state.snackbarStatus}
+                  onDismiss={this.onDismissSnackBar}
+                  style={styles.snackbar}
+                >
+                  {this.state.snackbarMsg}
+                </Snackbar>
+              </View>
+            }
 
 
           </SafeAreaView>
