@@ -14,6 +14,7 @@ import RouteScreen from './components/RouteScreen';
 import RouteAddScreen from './components/RouteAddScreen';
 import RouteEditScreen from './components/RouteEditScreen';
 import CustomerScreen from './components/CustomerScreen';
+import CustomerAddScreen from './components/CustomerAddScreen';
 import CustomerEditScreen from './components/CustomerEditScreen';
 import LogoutScreen from './components/LogoutScreen';
 import DashboardScreen from './components/DashboardScreen';
@@ -102,7 +103,7 @@ const LandingScreen = () => (
       }}
     />
 
-     <Drawer.Screen
+    <Drawer.Screen
       name="RouteEdit"
       component={RouteEditScreen}
       options={{
@@ -120,6 +121,13 @@ const LandingScreen = () => (
 
     <Drawer.Screen
       name="CustomerAdd"
+      component={CustomerAddScreen}
+      options={{
+        drawerItemStyle: { height: 0 }
+      }}
+    />
+    <Drawer.Screen
+      name="CustomerEdit"
       component={CustomerEditScreen}
       options={{
         drawerItemStyle: { height: 0 }

@@ -8,7 +8,7 @@ import RouteService from '../service/routeService';
 import { localDataSet } from '../config/localDataSet';
 import TextInputCustom from '../components/common/TextInput'
 import ButtonCustom from '../components/common/Button'
-import { UserVo, AclCustVo, UserCustTypeDto, CustTypeVo, DEPT_LIST, DEPT } from 'codeartist-core'
+import { UserVo, AclCustVo, UserCustTypeDto, CustTypeVo, DEPT_LIST } from 'codeartist-core'
 import { ActivityIndicator } from 'react-native-paper';
 
 const windowWidth = Dimensions.get('window').width;
@@ -16,13 +16,9 @@ const windowHeight = Dimensions.get('window').height;
 
 const CustomerServiceApi = new CustomerService()
 const RouteServiceApi = new RouteService();
-// let filterDeptNameList = [];
+let filterDeptNameList = [];
 let selectItem = { "label": "", "value": "" };
-let selectItemDept = { "label": "", "value": "" };
-let userCustTypeDto = {} as UserCustTypeDto;
-// let userVo = {} as UserVo;
-let aclCustVo = {} as AclCustVo;
-class CustomerEditScreen extends Component {
+class CustomerAddScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -37,123 +33,9 @@ class CustomerEditScreen extends Component {
       customerList: [],
       routeCountList: '',
       showRouteCountDropDown: false,
-      showDeptTypeDropDown: false,
-      loaderStatus: false,
-      userVo: {},
-      custTypeVo: {},
-      filterDeptNameList: []
+      loaderStatus: false
     }
   }
-
-  static getDerivedStateFromProps(props, state) {
-    if (props.route.params.userVo) {
-      if (state.userVo.email) {
-        let deptValue = ""
-        userCustTypeDto = props.route.params.userVo.custType;
-
-        let deptType = state.custTypeVo.type
-        let routeCounterId = state.custTypeVo.routeCounterId
-        if (deptType === DEPT.DISTRIBUTION) {
-          deptValue = 'Distribution'
-        } else {
-          deptValue = 'Counter'
-        }
-        selectItemDept = { "label": deptValue, "value": state.custTypeVo.type };
-
-        let deptNameList = [];
-        if (state.routeCountList) {
-
-          state.routeCountList.filter(value => {
-            if (deptType == value.type) {
-              let custTypeVo = {
-                label: value.name,
-                value: value._id
-              }
-              if (routeCounterId === value._id) {
-                selectItem = { "label": value.name, "value": value._id };
-              }
-              deptNameList.push(custTypeVo)
-            }
-          })
-
-          return {
-            email: state.email,
-            nameF: state.nameF,
-            nameL: state.nameL,
-            cell: state.cell,
-            deptType: deptType,
-            routeCounterId: routeCounterId,
-            // selectItem: selectItem,
-            showDeptTypeDropDown: true,
-            // showRouteCountDropDown: true,
-            userVo: state.userVo,
-            custTypeVo: state.custTypeVo,
-            filterDeptNameList: deptNameList
-          };
-        }
-      } else {
-        let deptValue = '';
-        // userCustTypeDto = props.route.params.userVo;
-        // userCustTypeDto.dept =  props.route.params.userVo.dept;
-        // userCustTypeDto.emp =  props.route.params.userVo.emp;
-
-        userCustTypeDto = props.route.params.userVo.custType;
-        let deptType = props.route.params.userVo.custType.type
-        let routeCounterId = props.route.params.userVo.custType.routeCounterId
-
-        if (deptType === DEPT.DISTRIBUTION) {
-          deptValue = 'Distribution'
-        } else {
-          deptValue = 'Counter'
-        }
-        selectItemDept = {
-          "label": deptValue, "value": props.route.params.userVo.custType.type
-        };
-        // this.setDeptType(props.route.params.userVo.dept.type)
-
-        let deptNameList = [];
-        if (state.routeCountList) {
-
-          state.routeCountList.filter(value => {
-            if (deptType == value.type) {
-              let custTypeVo = {
-                label: value.name,
-                value: value._id
-              }
-              if (routeCounterId === value._id) {
-                selectItem = { "label": value.name, "value": value._id };
-              }
-              deptNameList.push(custTypeVo)
-            }
-          })
-          // filterDeptNameList = deptNameList
-          return {
-            userVo: props.route.params.userVo.cust,
-            custTypeVo: props.route.params.userVo.custType,
-            email: props.route.params.userVo.cust.email,
-            nameF: props.route.params.userVo.cust.nameF,
-            nameL: props.route.params.userVo.cust.nameF,
-            cell: props.route.params.userVo.cust.cell,
-            deptType: props.route.params.userVo.custType.type,
-            // selectItem: selectItem,
-            routeCounterId: props.route.params.userVo.custType.routeCounterId,
-            showDeptTypeDropDown: true,
-            showRouteCountDropDown: true,
-            filterDeptNameList: deptNameList
-          };
-        }
-
-        // deptNameList.filter(value => {
-        //   if (routeCounterId === value.value) {
-        //     selectItem = { "label": value.label, "value": value.value };
-        //   }
-        // })
-      }
-    }
-    return null;
-
-  }
-
 
   componentDidMount() {
     // console.log("getTokenValue", this.getTokenValue());
@@ -161,14 +43,11 @@ class CustomerEditScreen extends Component {
     this.getRouteCountList();
     const unsubscribe = this.props.navigation.addListener('state', (e) => {
       // Prevent default action
-      // this.reset();
+      this.reset();
     });
   }
 
   reset = () => {
-    this.props.route.params = ''
-    selectItemDept = { "label": "", "value": "" },
-      selectItem = { "label": "", "value": "" }
     this.setState({
       email: "",
       nameF: "",
@@ -176,11 +55,7 @@ class CustomerEditScreen extends Component {
       cell: "",
       deptType: "",
       routeCounterId: "",
-      errors: {},
-      userVo: {},
-      custTypeVo: {},
-      showDeptTypeDropDown: false,
-      showRouteCountDropDown: false,
+      errors: {}
     })
   }
   getCustomerList = () => {
@@ -200,8 +75,7 @@ class CustomerEditScreen extends Component {
       .then(result => {
         if (result.status == 'SUCCESS') {
           this.setState({
-            routeCountList: result.body,
-            showDeptTypeDropDown: true
+            routeCountList: result.body
           })
         }
       })
@@ -299,15 +173,15 @@ class CustomerEditScreen extends Component {
       }
 
       const userCustTypeDto = {} as UserCustTypeDto;
-      // const userVo = {} as UserVo;
-      // const aclCustVo = {} as AclCustVo;
+      const userVo = {} as UserVo;
+      const aclCustVo = {} as AclCustVo;
 
-      // const custTypeVo = {} as CustTypeVo;
+      const custTypeVo = {} as CustTypeVo;
 
-      // userVo.email = this.state.email;
-      // userVo.nameF = this.state.nameF;
-      // userVo.nameL = this.state.nameL;
-      // userVo.cell = this.state.cell;
+      userVo.email = this.state.email;
+      userVo.nameF = this.state.nameF;
+      userVo.nameL = this.state.nameL;
+      userVo.cell = this.state.cell;
 
       aclCustVo.role = "POS_CUST";
       aclCustVo.orgId = "BS";
@@ -317,12 +191,12 @@ class CustomerEditScreen extends Component {
       const cust = [];
       cust.push(aclCustVo);
 
-      this.state.userVo.cust = cust;
+      userVo.cust = cust;
 
-      // custTypeVo.routeCounterId = this.state.routeCounterId;
-      // custTypeVo.type = this.state.deptType;
-      userCustTypeDto.cust = this.state.userVo;
-      userCustTypeDto.custType = this.state.custTypeVo;
+      custTypeVo.routeCounterId = this.state.routeCounterId;
+      custTypeVo.type = this.state.deptType;
+      userCustTypeDto.cust = userVo;
+      userCustTypeDto.custType = custTypeVo;
 
       CustomerServiceApi.updateCustomerInfo(userCustTypeDto)
         .then(result => {
@@ -391,89 +265,39 @@ class CustomerEditScreen extends Component {
   }
 
   setDeptType = (deptType) => {
-    let custTypeVo = this.state.custTypeVo;
-    custTypeVo.type = deptType;
-    custTypeVo.routeCounterId = ""
-    selectItem = { "label": "", "value": "" };
-    this.setState({
-      showRouteCountDropDown: false
-    })
     let deptNameList = [];
     if (this.state.routeCountList) {
       this.setState({
-        custTypeVo: custTypeVo,
-        // showRouteCountDropDown: true
+        deptType: deptType,
+        showRouteCountDropDown: true
       }, () => {
         const filterList = this.state.routeCountList.filter(value => {
           if (deptType == value.type) {
-            let custTypeVo = {
+            let deptVo = {
               label: value.name,
               value: value._id
             }
-            deptNameList.push(custTypeVo)
+            deptNameList.push(deptVo)
           }
         })
-        this.setState({
-          filterDeptNameList: deptNameList,
-          // showRouteCountDropDown: true
-        })
-        setTimeout(() => {
-          this.setState({
-            showRouteCountDropDown: true
-          })
-        }, 2000);
       })
     }
-    // filterDeptNameList = deptNameList
+    filterDeptNameList = deptNameList
+  }
+
+  setDeptName = (deptName) => {
+    this.setState({
+      deptName: deptName
+    })
+    // this.showDialog(true);
   }
 
   setDeptName = (routeCounterId) => {
-    let custTypeVo = this.state.custTypeVo;
-    custTypeVo.routeCounterId = routeCounterId;
+    console.log("deptNamedeptName", routeCounterId);
     this.setState({
       routeCounterId: routeCounterId,
     })
     this.showDialog(false);
-  }
-
-  setEmail = (value) => {
-    let userVo = this.state.userVo;
-    userVo.email = value;
-    this.setState({
-      userVo: userVo,
-      showDeptTypeDropDown: true
-    }, () => {
-    });
-  }
-
-  setNameFirst = (value) => {
-    let userVo = this.state.userVo;
-    userVo.nameF = value;
-    this.setState({
-      userVo: userVo,
-      showDeptTypeDropDown: true
-    }, () => {
-    });
-  }
-
-  setNameLast = (value) => {
-    let userVo = this.state.userVo;
-    userVo.nameL = value;
-    this.setState({
-      userVo: userVo,
-      showDeptTypeDropDown: true
-    }, () => {
-    });
-  }
-
-  setCell = (value) => {
-    let userVo = this.state.userVo;
-    userVo.cell = value;
-    this.setState({
-      userVo: userVo,
-      showDeptTypeDropDown: true
-    }, () => {
-    });
   }
 
   cancel = (deptName) => {
@@ -518,8 +342,8 @@ class CustomerEditScreen extends Component {
               <TextInputCustom
                 label="Email"
                 returnKeyType="next"
-                value={this.state.userVo.email}
-                onChangeText={this.setEmail}
+                value={this.state.email}
+                onChangeText={(email) => this.setState({ email })}
                 error={!!this.state.errors.email}
                 errorText={this.state.errors.email}
                 autoCapitalize="none"
@@ -531,8 +355,8 @@ class CustomerEditScreen extends Component {
               <TextInputCustom
                 label="First Name"
                 returnKeyType="next"
-                value={this.state.userVo.nameF}
-                onChangeText={this.setNameFirst}
+                value={this.state.nameF}
+                onChangeText={(nameF) => this.setState({ nameF })}
                 error={!!this.state.errors.nameF}
                 errorText={this.state.errors.nameF}
                 autoCapitalize="none"
@@ -541,8 +365,8 @@ class CustomerEditScreen extends Component {
               <TextInputCustom
                 label="Last Name"
                 returnKeyType="next"
-                value={this.state.userVo.nameL}
-                onChangeText={this.setNameLast}
+                value={this.state.nameL}
+                onChangeText={(nameL) => this.setState({ nameL })}
                 error={!!this.state.errors.nameL}
                 errorText={this.state.errors.nameL}
                 autoCapitalize="none"
@@ -551,8 +375,8 @@ class CustomerEditScreen extends Component {
               <TextInputCustom
                 label="Cell"
                 returnKeyType="next"
-                value={this.state.userVo.cell}
-                onChangeText={this.setCell}
+                value={this.state.cell}
+                onChangeText={(cell) => this.setState({ cell })}
                 error={!!this.state.errors.cell}
                 errorText={this.state.errors.cell}
                 autoCapitalize="none"
@@ -570,11 +394,9 @@ class CustomerEditScreen extends Component {
                 list={DEPT_LIST}
               /> */}
 
-              {this.state.showDeptTypeDropDown &&
-                <View style={styles.dropDown}>
-                  <Dropdown label="Select Item" data={DEPT_LIST} initalSelected={selectItemDept} onSelect={(value) => this.setDeptType(value.value)} />
-                </View>
-              }
+              <View style={styles.dropDown}>
+                <Dropdown label="Select Item" data={DEPT_LIST} initalSelected={selectItem} onSelect={(value) => this.setDeptType(value.value)} />
+              </View>
               {this.state.errors.deptType && <Text style={styles.error}>{this.state.errors.deptType}</Text>}
 
               {this.state.showRouteCountDropDown &&
@@ -589,7 +411,7 @@ class CustomerEditScreen extends Component {
                 //   list={filterDeptNameList}
                 // />
                 <View style={styles.dropDown}>
-                  <Dropdown label="Select Item" data={this.state.filterDeptNameList} initalSelected={selectItem} onSelect={(value) => this.setDeptName(value.value)} />
+                  <Dropdown label="Select Item" data={filterDeptNameList} initalSelected={selectItem} onSelect={(value) => this.setDeptName(value.value)} />
                 </View>
               }
 
@@ -604,7 +426,7 @@ class CustomerEditScreen extends Component {
                       <TextInputCustom
                         label="Name"
                         returnKeyType="next"
-                        value={this.state.userVo.deptName}
+                        value={this.state.deptName}
                         onChangeText={(deptName) => this.setState({ deptName })}
                         autoCapitalize="none"
                       />
@@ -639,7 +461,7 @@ class CustomerEditScreen extends Component {
                 size='large'
               /> */}
               <ButtonCustom mode="contained" onPress={this.saveUser}>
-                Edit User
+                Add User
             </ButtonCustom>
 
               <ButtonCustom mode="contained" onPress={this.backMe}>
@@ -713,4 +535,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomerEditScreen;
+export default CustomerAddScreen;

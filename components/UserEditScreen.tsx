@@ -50,7 +50,6 @@ class UserEditScreen extends Component {
   }
 
   static getDerivedStateFromProps(props, state) {
-    console.log("props.route.params1111111", props.route.params.userVo)
     if (props.route.params.userVo) {
       if (state.userVo.email) {
         let deptValue = ""
@@ -100,11 +99,6 @@ class UserEditScreen extends Component {
         }
       } else {
         let deptValue = '';
-        console.log("pppppppp")
-        // userEmpDepartmentDto = props.route.params.userVo;
-        // userEmpDepartmentDto.dept =  props.route.params.userVo.dept;
-        // userEmpDepartmentDto.emp =  props.route.params.userVo.emp;
-
         userEmpDepartmentDto = props.route.params.userVo.dept;
         let deptType = props.route.params.userVo.dept.type
         let routeCounterId = props.route.params.userVo.dept.routeCounterId
@@ -331,8 +325,6 @@ class UserEditScreen extends Component {
       userEmpDepartmentDto.emp = this.state.userVo;
       userEmpDepartmentDto.dept = this.state.deptVo;
 
-      console.log("userEmpDepartmentDto", userEmpDepartmentDto)
-
       UserServiceApi.updateUserInfo(userEmpDepartmentDto)
         .then(result => {
           if (result.status == 'SUCCESS') {
@@ -400,8 +392,6 @@ class UserEditScreen extends Component {
   }
 
   setDeptType = (deptType) => {
-    console.log("deptTypedeptTypedeptType", deptType)
-    console.log("filterDeptNameList", this.state.filterDeptNameList)
     let deptVo = this.state.deptVo;
     deptVo.type = deptType;
     deptVo.routeCounterId = ""
@@ -409,7 +399,7 @@ class UserEditScreen extends Component {
     this.setState({
       showRouteCountDropDown: false
     })
-    console.log("deptVo", deptVo);
+
     let deptNameList = [];
     if (this.state.routeCountList) {
       this.setState({
@@ -449,7 +439,6 @@ class UserEditScreen extends Component {
   setDeptName = (routeCounterId) => {
     let deptVo = this.state.deptVo;
     deptVo.routeCounterId = routeCounterId;
-    console.log("deptVodeptVo", deptVo)
     this.setState({
       routeCounterId: routeCounterId,
     })

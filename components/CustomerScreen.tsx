@@ -31,10 +31,12 @@ class CustomerScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      customerVo: {},
       customerList: [],
       loaderStatus: false,
       routeCountList: [],
-      filterRouteCountList: []
+      filterRouteCountList: [],
+      dropDownStatus: true
     }
   }
 
@@ -53,6 +55,7 @@ class CustomerScreen extends Component {
   reLoad = () => {
     this.setState({
       customerList: [],
+      dropDownStatus: false,
       filterRouteCountList: []
     })
     this.getCustomerList();
@@ -67,8 +70,9 @@ class CustomerScreen extends Component {
         if (result.status == 'SUCCESS') {
           this.setState({
             routeCountList: result.body,
-            loaderStatus: false
-          }, () => this.setDeptValue(DEPT.DISTRIBUTION))
+            loaderStatus: false,
+            dropDownStatus: true,
+          }, () => this.setDeptValue("ALL"))
         }
       })
   }
@@ -89,9 +93,10 @@ class CustomerScreen extends Component {
   backMe = () => {
 
   }
-  selectedUser = (customerId) => {
-
-    console.log("jai ram ji ki", customerId);
+  selectedCustomer = (userVo) => {
+    this.props.navigation.navigate('CustomerEdit', {
+      userVo: userVo
+    });
   }
 
   setShowDropDown = (value) => {
@@ -125,9 +130,9 @@ class CustomerScreen extends Component {
     return this.state.filterRouteCountList.map((value, index) => {
       return (<View key={index}>
         <List.Item
-          title={value.cust.nameF + " " + value.cust.nameF}
+          title={value.cust.nameF + " " + value.cust.nameL}
           left={props => <List.Icon icon="account-circle-outline" />}
-          onPress={() => this.selectedUser(value.cust._id)}
+          onPress={() => this.selectedCustomer(value)}
           right={() => <List.Icon icon="chevron-right" />}
         />
 
@@ -158,10 +163,11 @@ class CustomerScreen extends Component {
             color={theme.colors.surface}
             onPress={this.addUser}
           />
-
-          <View style={styles.dropDown}>
-            <Dropdown label="Select Item" data={dptList} initalSelected={selectItem} onSelect={(value) => this.setDeptValue(value.value)} />
-          </View>
+          {this.state.dropDownStatus &&
+            <View style={styles.dropDown}>
+              <Dropdown label="Select Item" data={dptList} initalSelected={selectItem} onSelect={(value) => this.setDeptValue(value.value)} />
+            </View>
+          }
           {/* <View style={styles.dropDown}>
             <DropDown
               label={"Type"}
