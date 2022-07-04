@@ -112,8 +112,6 @@ class RouteEditScreen extends Component {
 
   }
 
-
-
   updateRouteCount = () => {
     RouteServiceApi.addUpdateRoute(this.state.routeVo)
       .then(result => {
@@ -142,6 +140,11 @@ class RouteEditScreen extends Component {
           })
         }
       })
+  }
+
+
+  deleteRouteCount = () =>{
+    console.log("deleteRouteCount",this.state.routeVo)
   }
 
   reset = () => {
@@ -203,6 +206,10 @@ class RouteEditScreen extends Component {
 
             <ButtonCustom mode="contained" colors={theme.colors.logo_color} onPress={this.updateRouteCount}>
               Edit
+            </ButtonCustom>
+
+            <ButtonCustom mode="contained" colors={theme.colors.error} onPress={this.deleteRouteCount}>
+              Delete
             </ButtonCustom>
 
             <ButtonCustom mode="contained" colors={theme.colors.logo_color} onPress={this.backMe}>

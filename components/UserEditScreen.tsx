@@ -358,6 +358,10 @@ class UserEditScreen extends Component {
 
   }
 
+  deleteRouteCount = () => {
+    console.log("deleteRouteCount", this.state.userVo)
+  }
+
   backMe = () => {
     this.reset();
     this.props.navigation.navigate('User');
@@ -628,6 +632,10 @@ class UserEditScreen extends Component {
             </ButtonCustom> : <ButtonCustom mode="contained" colors={theme.colors.logo_color} onPress={this.saveUser}>
                   Add User
             </ButtonCustom>}
+
+              <ButtonCustom mode="contained" colors={theme.colors.error} onPress={this.deleteRouteCount}>
+                Delete
+            </ButtonCustom>
               {/* <ButtonCustom mode="contained" onPress={this.saveUser}>
                 Add User
             </ButtonCustom> */}
