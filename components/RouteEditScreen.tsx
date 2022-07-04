@@ -201,11 +201,11 @@ class RouteEditScreen extends Component {
             />
 
 
-            <ButtonCustom mode="contained" onPress={this.updateRouteCount}>
+            <ButtonCustom mode="contained" colors={theme.colors.logo_color} onPress={this.updateRouteCount}>
               Edit
             </ButtonCustom>
 
-            <ButtonCustom mode="contained" onPress={this.backMe}>
+            <ButtonCustom mode="contained" colors={theme.colors.logo_color} onPress={this.backMe}>
               Back
             </ButtonCustom>
 

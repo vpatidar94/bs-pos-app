@@ -455,11 +455,11 @@ class CustomerAddScreen extends Component {
                 color={theme.colors.primary}
                 size='large'
               /> */}
-              <ButtonCustom mode="contained" onPress={this.saveUser}>
+              <ButtonCustom mode="contained" colors={theme.colors.logo_color} onPress={this.saveUser}>
                 Add User
             </ButtonCustom>
 
-              <ButtonCustom mode="contained" onPress={this.backMe}>
+              <ButtonCustom mode="contained" colors={theme.colors.logo_color} onPress={this.backMe}>
                 Back
             </ButtonCustom>
 

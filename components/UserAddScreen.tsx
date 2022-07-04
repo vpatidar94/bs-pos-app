@@ -459,14 +459,14 @@ class UserAddScreen extends Component {
                       style={styles.loader}
                     />
                   </View>}
-                <ButtonCustom mode="contained" onPress={this.saveUser}>
+                <ButtonCustom mode="contained" colors={theme.colors.logo_color} onPress={this.saveUser}>
                   Add User
             </ButtonCustom>
                 {/* <ButtonCustom mode="contained" onPress={this.saveUser}>
                 Add User
             </ButtonCustom> */}
 
-                <ButtonCustom mode="contained" onPress={this.backMe}>
+                <ButtonCustom mode="contained" colors={theme.colors.logo_color} onPress={this.backMe}>
                   Back
             </ButtonCustom>
 
