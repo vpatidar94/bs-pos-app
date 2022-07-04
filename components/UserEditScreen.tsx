@@ -163,7 +163,7 @@ class UserEditScreen extends Component {
   }
 
   componentWillUnmount() {
-    // console.log("jai ram ji ki")
+
   }
 
 
@@ -361,10 +361,6 @@ class UserEditScreen extends Component {
   backMe = () => {
     this.reset();
     this.props.navigation.navigate('User');
-  }
-  selectedUser = (userId) => {
-
-    // console.log("jai ram ji ki", userId);
   }
 
   onDismissSnackBar = () => {

@@ -104,7 +104,6 @@ class LoginScreen extends Component {
       })
       AuthServiceApi.loginInfo(userAuthDto)
         .then(result => {
-          console.log("result", result.body);
           if (result.status == 'SUCCESS') {
             if (result.body.token) {
               localDataSet.setLocal('token', result.body.token);
@@ -116,7 +115,6 @@ class LoginScreen extends Component {
                 this.props.navigation.dispatch(
                   StackActions.replace('updatepassword')
                 );
-                console.log("change password userpassword")
               } else {
                 this.props.navigation.dispatch(
                   StackActions.replace('landing')

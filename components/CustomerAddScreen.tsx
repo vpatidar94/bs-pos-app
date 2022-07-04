@@ -38,7 +38,6 @@ class CustomerAddScreen extends Component {
   }
 
   componentDidMount() {
-    // console.log("getTokenValue", this.getTokenValue());
     this.getCustomerList();
     this.getRouteCountList();
     const unsubscribe = this.props.navigation.addListener('state', (e) => {
@@ -236,11 +235,7 @@ class CustomerAddScreen extends Component {
     this.reset();
     this.props.navigation.navigate('Customer');
   }
-  selectedUser = (customerId) => {
-
-    console.log("jai ram ji ki", customerId);
-  }
-
+ 
   onDismissSnackBar = () => {
     this.setState({
       snackbarStatus: false

@@ -227,10 +227,6 @@ class UserAddScreen extends Component {
     this.reset();
     this.props.navigation.navigate('User');
   }
-  selectedUser = (userId) => {
-
-    // console.log("jai ram ji ki", userId);
-  }
 
   onDismissSnackBar = () => {
     this.setState({

@@ -41,10 +41,7 @@ class CustomerScreen extends Component {
   }
 
   componentDidMount() {
-    // console.log("getTokenValue", this.getTokenValue());
-
     this.getCustomerList();
-    // this.props.navigation.navigate.addListner('willFocus', this.reLoad);
     const unsubscribe = this.props.navigation.addListener('state', (e) => {
       // Prevent default action
       this.reLoad();
@@ -138,17 +135,7 @@ class CustomerScreen extends Component {
 
       </View>)
     })
-    // console.log("this.state.routeCountListppp", this.state.routeCountList);
-    // return this.state.routeCountList.map( (value, i {
-    //   return (<View><Text>{value.name}</Text></View>);
-    // });
   }
-
-  // hideDialog = () => {
-  //   this.setState({
-  //     showDialog: false
-  //   })
-  // }
 
   render() {
     return (
